@@ -1,4 +1,4 @@
-# Python-Space-Shooter
+# Embrace The Cosmos
 A space based roguelike deckbuilder. 
 The goal is to make it to the end of each sector fighting enemies and building up your ship.
 
