@@ -53,7 +53,7 @@ def battle(screen, pg):
 
     while True:
         screen.blit(bg, (0, 0))
-        hand.draw(screen)
+        hand.ddraw(screen, pygame.mouse.get_pos())
         # place the player object (the loaded image)
         for p in pg:
             screen.blit(p.get_img(), player.pos)

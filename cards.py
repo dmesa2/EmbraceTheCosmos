@@ -28,6 +28,11 @@ class Hand(pygame.sprite.Group):
             screen.blit(card.image, card.rect)
             if card.highlight:
                 card.show_box(screen, CYAN, 2)
+    def ddraw(self, screen, position):
+        for card in self.sprites():
+            screen.blit(card.image, card.rect)
+            if card.rect.collidepoint(position):
+                card.show_box(screen, CYAN, 2)
 
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x=0, y=0):
