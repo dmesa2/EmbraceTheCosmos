@@ -28,7 +28,9 @@ def targeting(screen, bg, pg, eg, hand):
         target.update(mX, mY)
         #if any(pygame.sprite.spritecollide(target, eg, False)):
         if any([sp.collision(mX, mY) for sp in eg]):
-            screen.blit(target.alt_img(), (mX, mY))
+            screen.blit(target.get_atk(), (mX, mY))
+        elif any([sp.collision(mX, mY) for sp in pg]):
+            screen.blit(target.get_bst(), (mX, mY))
         else:
             screen.blit(target.get_img(), (mX, mY))
         pygame.event.pump()

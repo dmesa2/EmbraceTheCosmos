@@ -37,7 +37,7 @@ class Character(sprite.Sprite):
 
     def collision(self, x, y):
         return self.rect2.collidepoint(x, y)
-        
+
     def rescale(self, w, h):
         self.image = pygame.transform.scale(self.image, (w, h))
 
@@ -64,7 +64,8 @@ class Target(sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.transform.scale(pygame.image.load("assets/Misc/red_target.png"), (24, 24))
-        self.alternate = pygame.transform.scale(pygame.image.load("assets/Misc/green_target.png"), (24, 24))
+        self.attack_img = pygame.transform.scale(pygame.image.load("assets/Misc/green_target.png"), (24, 24))
+        self.boost_img = pygame.transform.scale(pygame.image.load("assets/Misc/blue_target.png"), (24, 24))
         self.rect = self.image.get_rect()
 
     def update(self, x, y):
@@ -73,8 +74,11 @@ class Target(sprite.Sprite):
     def get_img(self):
         return self.image
 
-    def alt_img(self):
-        return self.alternate
+    def get_atk(self):
+        return self.attack_img
+
+    def get_bst(self):
+        return self.boost_img
 
     def show_box(self, screen):
         pygame.draw.rect(screen, WHITE, self.rect, 1)

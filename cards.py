@@ -11,10 +11,6 @@ CARD_HEIGHT = 130
 RES_WIDTH = 1400
 RES_HEIGHT = 1000
 
-class Cards(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-
 class Hand(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
