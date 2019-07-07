@@ -31,10 +31,13 @@ class Character(sprite.Sprite):
         self.rect = self.image.get_rect(topleft=self.pos)
         self.rect2 = self.image.get_bounding_rect()
         self.rect2.center = self.rect.center
-        
+
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
 
+    def collision(self, x, y):
+        return self.rect2.collidepoint(x, y)
+        
     def rescale(self, w, h):
         self.image = pygame.transform.scale(self.image, (w, h))
 

@@ -26,7 +26,8 @@ def targeting(screen, bg, pg, eg, hand):
         pg.draw_rect(screen)
         mX, mY = pygame.mouse.get_pos()
         target.update(mX, mY)
-        if any(pygame.sprite.spritecollide(target, eg, False)):
+        #if any(pygame.sprite.spritecollide(target, eg, False)):
+        if any([sp.collision(mX, mY) for sp in eg]):
             screen.blit(target.alt_img(), (mX, mY))
         else:
             screen.blit(target.get_img(), (mX, mY))
