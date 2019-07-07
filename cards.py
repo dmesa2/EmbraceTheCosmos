@@ -4,7 +4,7 @@ from pygame.locals import *
 
 BASE = os.path.join(os.getcwd(), "assets", "Cards")
 WHITE = (255, 255, 255)
-CYAN = (50, 50, 245)
+CYAN = (100, 150, 245)
 
 CARD__WIDTH = 93
 CARD_HEIGHT = 130

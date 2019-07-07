@@ -49,8 +49,8 @@ def battle(screen, pg):
     eg.update()
     pg.update()
     hand = Hand()
-    hand.add(Card("C_Laser_Cannon.png", 600, HEIGHT - CARD_HEIGHT),
-             Card("C_Shield.png", 693, HEIGHT - CARD_HEIGHT))
+    hand.add(Card("C_Laser_Cannon.png", WIDTH / 2 - CARD__WIDTH / 2, HEIGHT - CARD_HEIGHT),
+             Card("C_Shield.png", WIDTH / 2 + CARD__WIDTH / 2, HEIGHT - CARD_HEIGHT))
     hand.update()
     pygame.mouse.set_visible(True)
 
