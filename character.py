@@ -26,10 +26,12 @@ class Enemy(sprite.Group):
 class Character(sprite.Sprite):
     def __init__(self, image, x=0, y=0):
         super().__init__()
-        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale2x(pygame.image.load(image))
         self.pos = [x, y]
         self.rect = self.image.get_rect(topleft=self.pos)
-
+        self.rect2 = self.image.get_bounding_rect()
+        self.rect2.center = self.rect.center
+        
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
 
@@ -53,7 +55,7 @@ class Character(sprite.Sprite):
         return self.image
 
     def show_box(self, screen):
-        pygame.draw.rect(screen, WHITE, self.rect, 1)
+        pygame.draw.rect(screen, WHITE, self.rect2, 1)
 
 class Target(sprite.Sprite):
     def __init__(self):
