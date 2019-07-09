@@ -7,6 +7,7 @@ from battle import *
 from cards import Card, Hand
 from character import *
 from gamestate import *
+from map import *
 
 def main_menu(screen, myfont):
     text = myfont.render("Play", True, BLACK) 
@@ -42,7 +43,8 @@ def buttons(screen,text,text2,text3):
     if 340+170 > mouse[0] > 340 and 250+50 > mouse[1] > 250:
         pygame.draw.rect(screen, BRIGHT_GRAY,(340,250,170,50))
         if click[0] == 1:
-           battle(screen, pg) 
+           #battle(screen, pg)
+           main_map(screen)
     else:
         pygame.draw.rect(screen, GRAY,(340,250,170,50))
         
