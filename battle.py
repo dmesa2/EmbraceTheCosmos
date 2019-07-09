@@ -92,4 +92,5 @@ if __name__ == "__main__":
     player = Character(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'),
         50, SCREEN_HEIGHT / 4)
     player_group.add(player)
+    
     battle(screen, player_group)
