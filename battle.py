@@ -8,6 +8,11 @@ from character import Player, Enemy, Character, Target
 from gamestate import *
 
 def targeting(screen, bg, player_group, enemy_group, hand):
+    '''
+    Function called when a card is selected by the player
+    Sucessful targeting means the card is used
+    Otherwise the game state returns to as it was
+    '''
     pygame.mouse.set_visible(False)
     target = Target()
     targeted = False
@@ -21,9 +26,10 @@ def targeting(screen, bg, player_group, enemy_group, hand):
         player_group.draw_rect(screen)
         mX, mY = pygame.mouse.get_pos()
         target.update(mX, mY)
-        #if any(pygame.sprite.spritecollide(target, enemy_group, False)):
+        # If a sucessful collisoin with the enemy is detected
         if any([sp.collision(mX, mY) for sp in enemy_group]):
             screen.blit(target.get_atk(), (mX, mY))
+        # If a sucessful collision with the player is detected
         elif any([sp.collision(mX, mY) for sp in player_group]):
             screen.blit(target.get_bst(), (mX, mY))
         else:
@@ -57,8 +63,6 @@ def battle(screen, player_group):
              Card("C_Shield.png", SCREEN_WIDTH / 2 + CARD__WIDTH / 2, SCREEN_HEIGHT - CARD_HEIGHT))
     hand.update()
     pygame.mouse.set_visible(True)
-    for p in player_group:
-        print(p.pos, p.rect, p.rect2)
     while True:
         pygame.time.Clock().tick(40)
         # draw background
@@ -98,5 +102,5 @@ if __name__ == "__main__":
             0, 300)
 
     player_group.add(player)
-    
+
     battle(screen, player_group)

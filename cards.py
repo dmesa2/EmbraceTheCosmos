@@ -1,15 +1,8 @@
 import pygame
 import os
 from pygame.locals import *
-
+from gamestate import *
 BASE = os.path.join(os.getcwd(), "assets", "Cards")
-WHITE = (255, 255, 255)
-CYAN = (100, 150, 245)
-
-CARD__WIDTH = 93
-CARD_HEIGHT = 130
-RES_WIDTH = 1400
-RES_HEIGHT = 1000
 
 class Hand(pygame.sprite.Group):
     def __init__(self):
@@ -33,12 +26,23 @@ class Hand(pygame.sprite.Group):
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x=0, y=0):
         super().__init__()
-        pth = os.path.join(BASE, image_path)
-        self.image = pygame.transform.scale(pygame.image.load(pth), (CARD__WIDTH, CARD_HEIGHT))
+        pth = os.path.join(CARD_PATH, image_path)
+        self.id = None
+        self.image = pygame.transform.scale(pygame.image.load(pth), (CARD_WIDTH, CARD_HEIGHT))
         self.pos = [x, y]
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.type = 'Attack'
         self.highlight = False
+        # EFFECTS
+        # TARGET_ATTACK, AREA_ATTACK, BOOST, POWER
+        self.type = None
+        # Power cost to ship
+        self.cost = 0
+        # Dictionary to hold alternate effects
+        self.status_effect = dict()
+        # Player Class e.g. FIGHTER or NEUTRAL
+        self.class = None
+        self.damage = None
+        self.defense = None
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
