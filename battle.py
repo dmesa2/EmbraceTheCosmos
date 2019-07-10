@@ -98,4 +98,5 @@ if __name__ == "__main__":
             0, 300)
 
     player_group.add(player)
+    
     battle(screen, player_group)
