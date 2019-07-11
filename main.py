@@ -85,5 +85,6 @@ if __name__=='__main__':
     pg.add(player)
     map_call = Map()
 
+
     main_menu(screen,myfont,pg,map_call)
     #battle(screen, pg)

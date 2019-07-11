@@ -26,7 +26,7 @@ class Enemy(sprite.Group):
 class Character(sprite.Sprite):
     def __init__(self, image, x=0, y=0):
         super().__init__()
-        self.image = pygame.transform.scale2x(pygame.image.load(image))
+        self.image = pygame.image.load(image)
         self.pos = [x, y]
         self.rect = self.image.get_rect(topleft=self.pos)
         self.rect2 = self.image.get_bounding_rect()
@@ -34,6 +34,8 @@ class Character(sprite.Sprite):
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.rect2 = self.image.get_bounding_rect()
+        self.rect2.center = self.rect.center
 
     def collision(self, x, y):
         return self.rect2.collidepoint(x, y)

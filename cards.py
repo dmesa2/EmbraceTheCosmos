@@ -1,15 +1,8 @@
 import pygame
 import os
 from pygame.locals import *
-
+from gamestate import *
 BASE = os.path.join(os.getcwd(), "assets", "Cards")
-WHITE = (255, 255, 255)
-CYAN = (100, 150, 245)
-
-CARD__WIDTH = 93
-CARD_HEIGHT = 130
-RES_WIDTH = 1400
-RES_HEIGHT = 1000
 
 class Hand(pygame.sprite.Group):
     def __init__(self):
@@ -33,15 +26,44 @@ class Hand(pygame.sprite.Group):
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x=0, y=0):
         super().__init__()
-        pth = os.path.join(BASE, image_path)
-        self.image = pygame.transform.scale(pygame.image.load(pth), (CARD__WIDTH, CARD_HEIGHT))
+        pth = os.path.join(CARD_PATH, image_path)
+        self.id = None
+        self.image = pygame.transform.scale(pygame.image.load(pth), (CARD_WIDTH, CARD_HEIGHT))
         self.pos = [x, y]
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.type = 'Attack'
         self.highlight = False
+        # EFFECTS
+        # TARGET_ATTACK, AREA_ATTACK, BOOST, POWER
+        self.type = None
+        self.name = None
+        self.desc = None
+        self.hitpoint = None
+        self.ctype = None
+        self.cclass = None
+        # Power cost to ship
+        self.cost = 0
+        # Dictionary to hold alternate effects
+        self.status_effect = dict()
+        # Player Class e.g. FIGHTER or NEUTRAL
+        #self.class = None
+        #self.damage = None
+        self.defense = None
+								
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def show_box(self, screen, color, width=1):
         pygame.draw.rect(screen, color, self.rect, width)
+
+    ''' 
+		def load_cards(self, filename):
+        deck = {}
+        card_file = open('cards.txt').readlines()
+        for line in card_file:
+            row = line.split(',')
+            idn, name, desc, hitpoint, ctype, cclass, image_path = [i.strip() for i in row]
+            card = Card(idn, name, desc, hitpoint, ctype, cclass, image_path)
+            deck[card_id] = card
+        return deck
+    '''

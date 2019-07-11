@@ -1,0 +1,7 @@
+1,Laser Beam,Fire Your Turret For An Attack,44,Attack, Common
+2,Rocket, Use Your Rockets For An Attack,54,Attack, Common
+3,Full Shield, Shield Yourself, 0, Heal, Common
+4,Vortex Beam, Fire a Vortex Beam, 87, Attack, Rare
+5,Nuclear Missile, Excellent against big space ships, 100, Attack, Rare
+6,EMP Missile, Excellent against the Energy Shield and big space ships, 0, Attack, Rare
+7,Fast Missile,The Fast Missile shoots any target directly, 15, Attack, Common
