@@ -9,7 +9,7 @@ from character import *
 from gamestate import *
 from map import *
 
-def main_menu(screen, myfont,pg):
+def main_menu(screen, myfont,pg,map_call):
     text = myfont.render("Play", True, BLACK) 
     text2 = myfont.render("Help", True, BLACK)
     text3 = myfont.render("Quit", True, BLACK)
@@ -21,7 +21,7 @@ def main_menu(screen, myfont,pg):
         screen.blit(menu, (0, 0))
         screen.blit(menu_image,(5,50))
 
-        buttons(screen,text,text2,text3,pg)
+        buttons(screen,text,text2,text3,pg,map_call)
 
         #print(mouse)
         for event in pygame.event.get():
@@ -33,7 +33,7 @@ def main_menu(screen, myfont,pg):
 
 # For the button function, I used sentdex tutorials from youtube.com 
 # as a reference
-def buttons(screen,text,text2,text3,pg):
+def buttons(screen,text,text2,text3,pg,map_call):
     pygame.draw.rect(screen, GRAY,(340,250,170,50))
     pygame.draw.rect(screen, GRAY,(340,350,170,50))
     pygame.draw.rect(screen, GRAY,(340,450,170,50))
@@ -44,7 +44,7 @@ def buttons(screen,text,text2,text3,pg):
         pygame.draw.rect(screen, BRIGHT_GRAY,(340,250,170,50))
         if click[0] == 1:
            #battle(screen, pg)
-           main_map(screen,pg)
+           map_call.main_map(screen)
     else:
         pygame.draw.rect(screen, GRAY,(340,250,170,50))
         
@@ -83,6 +83,7 @@ if __name__=='__main__':
     pg = Player()
     player = Character(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), 100, 500)
     pg.add(player)
+    map_call = Map()
 
-    main_menu(screen,myfont,pg)
+    main_menu(screen,myfont,pg,map_call)
     #battle(screen, pg)
