@@ -35,17 +35,35 @@ class Card(pygame.sprite.Sprite):
         # EFFECTS
         # TARGET_ATTACK, AREA_ATTACK, BOOST, POWER
         self.type = None
+        self.name = None
+        self.desc = None
+        self.hitpoint = None
+        self.ctype = None
+        self.cclass = None
         # Power cost to ship
         self.cost = 0
         # Dictionary to hold alternate effects
         self.status_effect = dict()
         # Player Class e.g. FIGHTER or NEUTRAL
-        self.class = None
-        self.damage = None
+        #self.class = None
+        #self.damage = None
         self.defense = None
+								
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def show_box(self, screen, color, width=1):
         pygame.draw.rect(screen, color, self.rect, width)
+
+    ''' 
+		def load_cards(self, filename):
+        deck = {}
+        card_file = open('cards.txt').readlines()
+        for line in card_file:
+            row = line.split(',')
+            idn, name, desc, hitpoint, ctype, cclass, image_path = [i.strip() for i in row]
+            card = Card(idn, name, desc, hitpoint, ctype, cclass, image_path)
+            deck[card_id] = card
+        return deck
+    '''
