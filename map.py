@@ -3,12 +3,12 @@ import os
 from pygame.locals import *
 from battle import *
 
-def main_map(screen):
+def main_map(screen,pg):
     map_image = pygame.transform.scale(pygame.image.load('assets/map_icons/map.png'), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     while True:
         screen.blit(map_image, (0, 0))
-        main_icons(screen)
+        main_icons(screen,pg)
        # print(mouse)
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -17,14 +17,14 @@ def main_map(screen):
                 break
             pygame.display.update()
 
-def main_icons(screen):
+def main_icons(screen,pg):
    boss_icon(screen)
 
    left_side_minion_one(screen)
    left_side_minion_two(screen)
    left_side_minion_three(screen)
    left_side_minion_four(screen)
-   left_side_minion_five(screen)
+   left_side_minion_five(screen,pg)
 
    right_side_minion_one(screen)
    right_side_minion_two(screen)
@@ -105,7 +105,7 @@ def left_side_minion_four(screen):
     else:
      screen.blit(minion4, (122,498))
 
-def left_side_minion_five(screen):
+def left_side_minion_five(screen,pg):
     minion5 = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-small.png'), (40, 40))
     minion5_large = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot.png'), (50, 50))
 
@@ -114,6 +114,8 @@ def left_side_minion_five(screen):
 
     if 192+30 > mouse[0] > 192 and 50+560 > mouse[1] > 50:
        screen.blit(minion5_large, (187,560))
+       if click[0] == 1:
+          battle(screen,pg)
     else:
      screen.blit(minion5, (192,560))
 
