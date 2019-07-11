@@ -32,7 +32,7 @@ Pygame 1.9.6 is required to run this program.
 All dependencies can be installed through the reqirements file `pip3 install -r requirements.txt`  
 
 There can be compatability issues with Mac. More information [here](https://github.com/pygame/pygame/issues/555)    
-[Potential fix] (https://stackoverflow.com/questions/52718921/problems-getting-pygame-to-show-anything-but-a-blank-screen-on-macos-mojave)    
+[Potential fix](https://stackoverflow.com/questions/52718921/problems-getting-pygame-to-show-anything-but-a-blank-screen-on-macos-mojave)    
 
 To run `python3 main.py`
 
