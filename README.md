@@ -39,6 +39,11 @@ To run `python3 main.py`
 ## Tutorial
 Coming soon!
 
+## Acknowledgments
+[Free Pixel Art Enemy Spaceship 2D Sprites](https://free-game-assets.itch.io/free-enemy-spaceship-2d-sprites-pixel-art)
+Icons made by [delapouite](http://delapouite.com), [lorc](http://lorcblog.blogspot.com), sourced from [game-icons.net](https://game-icons.net).  
+
+
 ## License
 This program is licensed under the "MIT License". Please see the `LICENSE` file in source distribution for license terms.
 
