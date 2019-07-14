@@ -34,6 +34,16 @@ class Hand(pygame.sprite.Group):
             x += CARD_WIDTH
             sp.update()
 
+    def get_area(self):
+        width = CARD_WIDTH * len(self)
+        top = SCREEN_HEIGHT - CARD_HEIGHT
+        left = (SCREEN_WIDTH  - width) / 2
+        offset_x = SCREEN_WIDTH * 0.1
+        offset_y = SCREEN_HEIGHT * 0.1
+        return pygame.Rect((left - offset_x, top - offset_y, width + 2 * offset_x, CARD_HEIGHT + CARD_HEIGHT + offset_y ))
+
+
+
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x, y, name, ctype, cost, pclass, damage, shield):
         super().__init__()
@@ -65,8 +75,8 @@ class Card(pygame.sprite.Sprite):
 
     def copy(self):
         return Card(self.image_path, self.pos[0], self.pos[1], self.name,
-                    self.ctype, self.cost, self.pclass, self.damage, self.shield
-                    )
+                    self.ctype, self.cost, self.pclass, self.damage, self.shield)
+
 def read_card(card):
     return Card(card['image'], 0, 0, card['name'], card['type'], card['cost'],
              card['class'], card['damage'], card['shield'])

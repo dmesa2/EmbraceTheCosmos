@@ -16,6 +16,16 @@ class Enemy_Gr(sprite.Group):
     def draw_rect(self, screen):
         for s in self.sprites():
             s.show_box(screen)
+    def draw(self, screen):
+        for sp in self.sprites():
+            sp.draw(screen)
+
+    def process_attack(self, card, target=None):
+        if target:
+            target.damage(card.damage)
+        else:
+            for sp in self.sprites():
+                sp.damage(card.damage)
 
 class Character(sprite.Sprite):
     def __init__(self, image, max_health=40, x=0, y=0):
@@ -29,7 +39,7 @@ class Character(sprite.Sprite):
         # stats
         self.max_health = max_health
         self.current_health = max_health
-        self.defense = 0
+        self.shield = 0
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -49,13 +59,7 @@ class Character(sprite.Sprite):
 
     def rescale_factor(self, n):
         width, height = self.image.get_size()
-        self.image = pygame.transform.scale(self.image, (width // n, height // n))
-
-    def reposition(self, x=None, y=None):
-        if x:
-            self.pos[X] = x
-        if y:
-            self.pos[Y] = y
+        self.image = pygame.transform.scale(self.image, (width * n, height * n))
 
     def flip(self):
         self.image = pygame.transform.flip(self.image, True, False)
@@ -71,12 +75,15 @@ class Character(sprite.Sprite):
         self.draw_health(screen)
 
     def draw_health(self, screen):
-        if self.defense:
-            pygame.draw.rect(screen, BLUE, self.health_bar)
-        else:
-            pygame.draw.rect(screen, GRAY, self.health_bar)
-            health = self.health_bar.copy()
-            health.width *= self.current_health / self.max_health
+        if self.max_health > 0:
+            if self.shield:
+                pygame.draw.rect(screen, BLUE, self.health_bar)
+            else:
+                pygame.draw.rect(screen, GRAY, self.health_bar)
+                health = self.health_bar.copy()
+                health.width *= self.current_health / self.max_health
+                pygame.draw.rect(screen, RED, health)
+
 
 class Player(Character):
     def __init__(self, image, health, x=0, y=0):
@@ -94,7 +101,7 @@ class Player(Character):
             # If deck is empty reshuffle graveyard into deck before drawing cards
             if not self.deck:
                 random.shuffle(self.graveyard)
-                self.deck = self.graveyard
+                self.deck = self.graveyard.copy()
                 self.graveyard = []
             c = self.deck.pop()
             self.hand.add(c)
@@ -106,12 +113,31 @@ class Player(Character):
         self.graveyard = []
         self.in_play = []
 
+    def end_turn(self, board):
+        for card in self.hand:
+            self.graveyard.append(card)
+            card.remove(self.hand)
+        self.draw_hand()
+        self.hand.position_hand()
+
 class Enemy(Character):
     def __init__(self, image, health, x, y):
         super().__init__(image, health, x, y)
-        self.defense = 0
         self.attacks = []
         self.attack_idx = 0
+
+    def damage(self, ndmg):
+        if self.shield:
+            if self.shield > ndmg:
+                self.shield -= ndmg
+            else:
+                ndmg -= self.shield
+                self.shield = 0
+                self.current_health -= ndmg
+        else:
+            self.current_health -= ndmg
+        if self.current_health <= 0:
+            self.remove(self.groups())
 
 class Target(sprite.Sprite):
     def __init__(self):
