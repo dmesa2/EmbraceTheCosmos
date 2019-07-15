@@ -29,35 +29,35 @@ def targeting(screen, board, card, player, enemy_group):
         enemy_group.draw(screen)
         #enemy_group.draw_rect(screen)
         #player.show_box(screen)
-        mX, mY = pygame.mouse.get_pos()
-        target.update(mX, mY)
+        position = pygame.mouse.get_pos()
+        target.update(position)
         pygame.draw.rect(screen, WHITE, card_area, 1)
         if card.ctype == 'TARGET_ATTACK':
             # changes targeting recticle if a sucessful
             # collisoin with the enemy is detected
-            if any([sp.collision(mX, mY) for sp in enemy_group]):
-                screen.blit(target.get_atk(), (mX, mY))
+            if any([sp.collision(position) for sp in enemy_group]):
+                screen.blit(target.get_atk(), position)
             else:
-                screen.blit(target.get_img(), (mX, mY))
+                screen.blit(target.get_img(), position)
         else:
             # non targeted attack
             # highlights targeting recticle if outside card area
-            if not card_area.collidepoint(mX, mY):
-                screen.blit(target.get_bst(), (mX, mY))
+            if not card_area.collidepoint(position):
+                screen.blit(target.get_bst(), position)
             else:
-                screen.blit(target.get_img(), (mX, mY))
+                screen.blit(target.get_img(), position)
 
         pygame.event.pump()
         pygame.display.update()
     if card.ctype == 'TARGET_ATTACK':
-        targeted = [sp for sp in enemy_group if sp.collision(mX, mY)]
+        targeted = [sp for sp in enemy_group if sp.collision(position)]
         if targeted:
             player.hand.remove(card)
             player.graveyard.append(card)
             enemy_group.process_attack(card, targeted[0])
             ret = True
     else:
-        if not card_area.collidepoint(mX, mY):
+        if not card_area.collidepoint(position):
             if card.ctype == 'BOOST':
                 player.shield += card.shield
                 player.hand.remove(card)
@@ -93,7 +93,7 @@ def battle(screen, player):
     player.hand.position_hand()
     # change to draw function
     pygame.mouse.set_visible(True)
-    while True:
+    while enemy_group:
         pygame.time.Clock().tick(40)
         # draw background
         board.draw(screen)
@@ -124,7 +124,13 @@ def battle(screen, player):
 
             # update the display every iteration of this loop
             pygame.display.update()
-
+    board.draw(screen)
+    player.draw(screen)
+    salvage = pygame.Rect((0, 0, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    salvage.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    pygame.draw.rect(screen, GRAY, salvage)
+    pygame.display.update()
+    input()
 if __name__ == "__main__":
     # Run battle.py directly to test battle functionality
     pygame.init()

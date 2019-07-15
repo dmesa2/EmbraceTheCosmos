@@ -77,6 +77,16 @@ class Card(pygame.sprite.Sprite):
         return Card(self.image_path, self.pos[0], self.pos[1], self.name,
                     self.ctype, self.cost, self.pclass, self.damage, self.shield)
 
+    def process_card(self, player, enemy_group):
+        mX, mY = pygame.mouse.get_pos()
+        if self.ctype == "TARGET_ATTACK":
+            targeted = [sp for sp in enemy_group if sp.collision(mX, mY)]
+            if targeted:
+                enemy_group.process_attack(card, targeted[0])
+
+        player.hand.remove(card)
+        player.graveyard.append(card)
+
 def read_card(card):
     return Card(card['image'], 0, 0, card['name'], card['type'], card['cost'],
              card['class'], card['damage'], card['shield'])

@@ -51,8 +51,8 @@ class Character(sprite.Sprite):
         left, top, width, height = self.bounding_rect
         self.health_bar = pygame.Rect((left, top + height, width, 8))
 
-    def collision(self, x, y):
-        return self.bounding_rect.collidepoint(x, y)
+    def collision(self, position):
+        return self.bounding_rect.collidepoint(position)
 
     def rescale(self, w, h):
         self.image = pygame.transform.scale(self.image, (w, h))
@@ -72,9 +72,9 @@ class Character(sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        self.draw_health(screen)
+        self.draw_health_bar(screen)
 
-    def draw_health(self, screen):
+    def draw_health_bar(self, screen):
         if self.max_health > 0:
             if self.shield:
                 pygame.draw.rect(screen, BLUE, self.health_bar)
@@ -147,8 +147,8 @@ class Target(sprite.Sprite):
         self.boost_img = pygame.transform.scale(pygame.image.load("assets/Misc/blue_target.png"), (24, 24))
         self.rect = self.image.get_rect()
 
-    def update(self, x, y):
-        self.rect = self.image.get_rect(topleft=(x, y))
+    def update(self, position):
+        self.rect = self.image.get_rect(topleft=position)
 
     def get_img(self):
         return self.image
