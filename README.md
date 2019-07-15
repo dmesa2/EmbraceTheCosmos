@@ -40,7 +40,8 @@ To run `python3 main.py`
 Coming soon!
 
 ## Acknowledgments
-[Free Pixel Art Enemy Spaceship 2D Sprites](https://free-game-assets.itch.io/free-enemy-spaceship-2d-sprites-pixel-art)
+Spaceship sprites sourced from [Free Pixel Art Enemy Spaceship 2D Sprites](https://free-game-assets.itch.io/free-enemy-spaceship-2d-sprites-pixel-art)
+
 Icons made by [delapouite](http://delapouite.com), [lorc](http://lorcblog.blogspot.com), sourced from [game-icons.net](https://game-icons.net).  
 
 
