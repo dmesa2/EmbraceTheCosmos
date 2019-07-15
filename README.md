@@ -24,6 +24,12 @@ The player can spend cards to perform offensive or defensive actions. The cards 
 
 Combat ends when all enemies are reduced to 0 or when the player reaches 0. 
 
+### Cards
+Cards are divided into three types, `Attack, Defense, Repair`. In addition to there being three card category types, there 
+are also three card rarity types, `Common, Special, Rare`. Players start with a deck given to them, but as the game progress
+and you earn in game currency, you can buy cards at the shop. In addition to purchasing cards at the shop, as you progress
+through the game, your player will earn more powerful cards to help build your deck by progressing through levels.
+
 
 
 ## Run Information

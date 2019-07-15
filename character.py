@@ -2,56 +2,64 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from pygame import sprite
+import random
+import cards
+from gamestate import *
 
-WHITE = (255, 255, 255)
 X = 0
 Y = 1
 
-class Player(sprite.Group):
+class Enemy_Gr(sprite.Group):
     def __init__(self):
         super().__init__()
 
     def draw_rect(self, screen):
         for s in self.sprites():
             s.show_box(screen)
+    def draw(self, screen):
+        for sp in self.sprites():
+            sp.draw(screen)
 
-class Enemy(sprite.Group):
-    def __init__(self):
-        super().__init__()
-
-    def draw_rect(self, screen):
-        for s in self.sprites():
-            s.show_box(screen)
+    def process_attack(self, card, target=None):
+        if target:
+            target.damage(card.damage)
+        else:
+            for sp in self.sprites():
+                sp.damage(card.damage)
 
 class Character(sprite.Sprite):
-    def __init__(self, image, x=0, y=0):
+    def __init__(self, image, max_health=40, x=0, y=0):
         super().__init__()
         self.image = pygame.image.load(image)
         self.pos = [x, y]
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.rect2 = self.image.get_bounding_rect()
-        self.rect2.center = self.rect.center
+        self.bounding_rect = self.image.get_bounding_rect()
+        self.bounding_rect.center = self.rect.center
+        self.health_bar = self.health_init()
+        # stats
+        self.max_health = max_health
+        self.current_health = max_health
+        self.shield = 0
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.rect2 = self.image.get_bounding_rect()
-        self.rect2.center = self.rect.center
+        self.bounding_rect = self.image.get_bounding_rect()
+        self.bounding_rect.center = self.rect.center
+        self.health_init()
 
-    def collision(self, x, y):
-        return self.rect2.collidepoint(x, y)
+    def health_init(self):
+        left, top, width, height = self.bounding_rect
+        self.health_bar = pygame.Rect((left, top + height, width, 8))
+
+    def collision(self, position):
+        return self.bounding_rect.collidepoint(position)
 
     def rescale(self, w, h):
         self.image = pygame.transform.scale(self.image, (w, h))
 
     def rescale_factor(self, n):
         width, height = self.image.get_size()
-        self.image = pygame.transform.scale(self.image, (width // n, height // n))
-
-    def reposition(self, x=None, y=None):
-        if x:
-            self.pos[X] = x
-        if y:
-            self.pos[Y] = y
+        self.image = pygame.transform.scale(self.image, (width * n, height * n))
 
     def flip(self):
         self.image = pygame.transform.flip(self.image, True, False)
@@ -60,7 +68,76 @@ class Character(sprite.Sprite):
         return self.image
 
     def show_box(self, screen):
-        pygame.draw.rect(screen, WHITE, self.rect2, 1)
+        pygame.draw.rect(screen, WHITE, self.bounding_rect, 1)
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        self.draw_health_bar(screen)
+
+    def draw_health_bar(self, screen):
+        if self.max_health > 0:
+            if self.shield:
+                pygame.draw.rect(screen, BLUE, self.health_bar)
+            else:
+                pygame.draw.rect(screen, GRAY, self.health_bar)
+                health = self.health_bar.copy()
+                health.width *= self.current_health / self.max_health
+                pygame.draw.rect(screen, RED, health)
+
+
+class Player(Character):
+    def __init__(self, image, health, x=0, y=0):
+        super().__init__(image, health, x, y)
+        self.max_handsize = 3
+        self.all_cards = []
+        # battle hands
+        self.hand = cards.Hand()
+        self.graveyard = []
+        self.deck = []
+        self.in_play = []
+
+    def draw_hand(self):
+        for _ in range(self.max_handsize):
+            # If deck is empty reshuffle graveyard into deck before drawing cards
+            if not self.deck:
+                random.shuffle(self.graveyard)
+                self.deck = self.graveyard.copy()
+                self.graveyard = []
+            c = self.deck.pop()
+            self.hand.add(c)
+
+    def reset_decks(self):
+        self.hand.empty()
+        self.deck = self.all_cards.copy()
+        random.shuffle(self.deck)
+        self.graveyard = []
+        self.in_play = []
+
+    def end_turn(self, board):
+        for card in self.hand:
+            self.graveyard.append(card)
+            card.remove(self.hand)
+        self.draw_hand()
+        self.hand.position_hand()
+
+class Enemy(Character):
+    def __init__(self, image, health, x, y):
+        super().__init__(image, health, x, y)
+        self.attacks = []
+        self.attack_idx = 0
+
+    def damage(self, ndmg):
+        if self.shield:
+            if self.shield > ndmg:
+                self.shield -= ndmg
+            else:
+                ndmg -= self.shield
+                self.shield = 0
+                self.current_health -= ndmg
+        else:
+            self.current_health -= ndmg
+        if self.current_health <= 0:
+            self.remove(self.groups())
 
 class Target(sprite.Sprite):
     def __init__(self):
@@ -70,8 +147,8 @@ class Target(sprite.Sprite):
         self.boost_img = pygame.transform.scale(pygame.image.load("assets/Misc/blue_target.png"), (24, 24))
         self.rect = self.image.get_rect()
 
-    def update(self, x, y):
-        self.rect = self.image.get_rect(topleft=(x, y))
+    def update(self, position):
+        self.rect = self.image.get_rect(topleft=position)
 
     def get_img(self):
         return self.image
