@@ -52,22 +52,12 @@ def targeting(screen, board, card, player, enemy_group):
     if card.ctype == 'TARGET_ATTACK':
         targeted = [sp for sp in enemy_group if sp.collision(position)]
         if targeted:
-            player.hand.remove(card)
-            player.graveyard.append(card)
-            enemy_group.process_attack(card, targeted[0])
+            card.process_card(player, enemy_group)
             ret = True
     else:
         if not card_area.collidepoint(position):
-            if card.ctype == 'BOOST':
-                player.shield += card.shield
-                player.hand.remove(card)
-                player.graveyard.append(card)
-                ret = True
-            elif card.ctype == 'AREA_ATTACK':
-                player.hand.remove(card)
-                player.graveyard.append(card)
-                enemy_group.process_attack(card)
-                ret = True
+            card.process_card(player, enemy_group)
+            ret = True
     pygame.mouse.set_visible(True)
     return ret
 
