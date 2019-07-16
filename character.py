@@ -31,7 +31,7 @@ class Enemy_Gr(sprite.Group):
         enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'), 15)
         enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'), 15)
         enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'), 10)
-        self..add(enemy0, enemy1, enemy2)
+        self.add(enemy0, enemy1, enemy2)
 class Character(sprite.Sprite):
     def __init__(self, image, max_health=40):
         super().__init__()
@@ -65,6 +65,10 @@ class Character(sprite.Sprite):
     def rescale_factor(self, n):
         width, height = self.image.get_size()
         self.image = pygame.transform.scale(self.image, (width * n, height * n))
+
+    def move(self, x, y):
+        self.pos = [x, y]
+        self.update()
 
     def flip(self):
         self.image = pygame.transform.flip(self.image, True, False)
