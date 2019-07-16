@@ -1,0 +1,26 @@
+[
+    {
+        "image_path" : "Ship1/Ship1",
+        "max_health" : 30,
+        "shield" : 0,
+        "attack_pattern" : [-1, -3]
+    },
+    {
+        "image_path" : "Ship2/Ship2",
+        "max_health" : 50,
+        "shield" : 0,
+        "attack_pattern" : [-4, -1]
+    },
+    {
+        "image_path" : "Ship5/Ship5",
+        "max_health" : 20,
+        "shield" : 0,
+        "attack_pattern" : [-2, -6]
+    },
+    {
+        "image_path" : "Ship4/Ship4",
+        "max_health" : 10,
+        "shield" : 0,
+        "attack_pattern" : [-3, -2]
+    }
+]

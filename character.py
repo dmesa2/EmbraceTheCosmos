@@ -26,12 +26,17 @@ class Enemy_Gr(sprite.Group):
         else:
             for sp in self.sprites():
                 sp.damage(card.damage)
-
+    def spawn(self):
+         # change to dynamically create enemies
+        enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'), 15)
+        enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'), 15)
+        enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'), 10)
+        self..add(enemy0, enemy1, enemy2)
 class Character(sprite.Sprite):
-    def __init__(self, image, max_health=40, x=0, y=0):
+    def __init__(self, image, max_health=40):
         super().__init__()
         self.image = pygame.image.load(image)
-        self.pos = [x, y]
+        self.pos = [0, 0]
         self.rect = self.image.get_rect(topleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
         self.bounding_rect.center = self.rect.center
@@ -86,8 +91,8 @@ class Character(sprite.Sprite):
 
 
 class Player(Character):
-    def __init__(self, image, health, x=0, y=0):
-        super().__init__(image, health, x, y)
+    def __init__(self, image, health):
+        super().__init__(image, health)
         self.max_handsize = 3
         self.all_cards = []
         # battle hands
@@ -121,9 +126,10 @@ class Player(Character):
         self.hand.position_hand()
 
 class Enemy(Character):
-    def __init__(self, image, health, x, y):
-        super().__init__(image, health, x, y)
-        self.attacks = []
+    def __init__(self, image, health, shield, atk_pattern):
+        super().__init__(image, health)
+        self.shield = shield
+        self.attacks = atk_pattern
         self.attack_idx = 0
 
     def damage(self, ndmg):
