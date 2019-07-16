@@ -120,7 +120,6 @@ def battle(screen, player):
     salvage.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     pygame.draw.rect(screen, GRAY, salvage)
     pygame.display.update()
-    input()
 if __name__ == "__main__":
     # Run battle.py directly to test battle functionality
     pygame.init()
