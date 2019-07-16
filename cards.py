@@ -90,25 +90,14 @@ class Card(pygame.sprite.Sprite):
         player.hand.remove(self)
         player.graveyard.append(self)
 
-def read_card(card):
-    return Card(card['image'], 0, 0, card['name'], card['type'], card['cost'],
-             card['class'], card['damage'], card['shield'])
+    def read_card(card):
+        return Card(card['image'], 0, 0, card['name'], card['type'], card['cost'],
+                 card['class'], card['damage'], card['shield'])
+    
+    def load_cards(fname):
+        with open(fname, 'r') as f:
+            cards = json.load(f)
+        all_cards = [read_card(card) for card in cards]
+        return all_cards
 
 
-def load_cards(fname):
-    with open(fname, 'r') as f:
-        cards = json.load(f)
-    all_cards = [read_card(card) for card in cards]
-    return all_cards
-
-    '''
-		def load_cards(self, filename):
-        deck = {}
-        card_file = open('cards.txt').readlines()
-        for line in card_file:
-            row = line.split(',')
-            idn, name, desc, hitpoint, ctype, cclass, image_path = [i.strip() for i in row]
-            card = Card(idn, name, desc, hitpoint, ctype, cclass, image_path)
-            deck[card_id] = card
-        return deck
-    '''
