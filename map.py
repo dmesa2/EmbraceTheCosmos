@@ -27,6 +27,9 @@ class Map:
 
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/map.png'), (SCREEN_WIDTH, SCREEN_HEIGHT)))#[8]
 
+     #legend
+     self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/Legend.png'), (200, 50)))#[9]
+
   def boss_icon(self,screen):
     boss = self.array[0]
     boss_large = self.array[1] 
@@ -484,9 +487,10 @@ class Map:
 
   def main_map(self,screen):
       map_image = self.array[8]
-
+      legend = self.array[9]
       while True:
         screen.blit(map_image, (0, 0))
+        screen.blit(legend, (580,20))
         self.main_icons(screen)
        # print(mouse)
         for event in pygame.event.get():
