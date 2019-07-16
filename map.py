@@ -6,28 +6,28 @@ from battle import *
 class Map:
   def __init__(self):
 
-     #declaring array
+     #Declaring array
      self.array = []
 
-     #boss
+     #Boss
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech-small.png'), (70, 70)))#[0]
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech.png'), (85, 85))) #[1]
 
-     #minions
+     #Minions
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-small.png'), (40, 40)))#[2]
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot.png'), (50, 50)))#[3]
 
-     #stores
+     #Stores
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank-small.png'), (40, 40)))#[4]
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank.png'), (50, 50)))#[5]
 
-     #unknown
+     #Unknown
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-small.png'), (40, 40)))#[6]
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty.png'), (50, 50)))#[7]
 
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/map.png'), (SCREEN_WIDTH, SCREEN_HEIGHT)))#[8]
 
-     #legend
+     #Legend
      self.array.append(pygame.transform.scale(pygame.image.load('assets/map_icons/Legend.png'), (200, 50)))#[9]
 
   def boss_icon(self,screen):
