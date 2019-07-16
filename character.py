@@ -86,7 +86,7 @@ class Character(sprite.Sprite):
 
 
 class Player(Character):
-    def __init__(self, image, health, x=0, y=0):
+    def __init__(self, image=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), health=40, x=0, y=0):
         super().__init__(image, health, x, y)
         self.max_handsize = 3
         self.all_cards = []

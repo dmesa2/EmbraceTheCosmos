@@ -9,7 +9,7 @@ from character import *
 from gamestate import *
 from map import *
 
-def main_menu(screen, myfont,pg,map_call):
+def main_menu(screen, myfont, player, map_call):
     text = myfont.render("Play", True, BLACK) 
     text2 = myfont.render("Help", True, BLACK)
     text3 = myfont.render("Quit", True, BLACK)
@@ -21,7 +21,7 @@ def main_menu(screen, myfont,pg,map_call):
         screen.blit(menu, (0, 0))
         screen.blit(menu_image,(5,50))
 
-        buttons(screen,text,text2,text3,pg,map_call)
+        buttons(screen, text, text2, text3, player, map_call)
 
         #print(mouse)
         for event in pygame.event.get():
@@ -33,7 +33,7 @@ def main_menu(screen, myfont,pg,map_call):
 
 # For the button function, I used sentdex tutorials from youtube.com 
 # as a reference
-def buttons(screen,text,text2,text3,pg,map_call):
+def buttons(screen, text, text2, text3, player, map_call):
     pygame.draw.rect(screen, GRAY,(340,250,170,50))
     pygame.draw.rect(screen, GRAY,(340,350,170,50))
     pygame.draw.rect(screen, GRAY,(340,450,170,50))
@@ -80,11 +80,11 @@ if __name__=='__main__':
     # things on
     bg = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "spacefield_a-000.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
     menu = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "nebula01.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
-    pg = Player()
-    player = Character(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), 100, 500)
-    pg.add(player)
+    #pg = Player()
+    player = Player(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), 100, 500)
+    #pg.add(player)
     map_call = Map()
 
 
-    main_menu(screen,myfont,pg,map_call)
+    main_menu(screen, myfont, player, map_call)
     #battle(screen, pg)
