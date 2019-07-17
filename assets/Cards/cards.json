@@ -13,7 +13,7 @@
   {
     "name" : "Shields Up",
     "id" : 2,
-    "image" : "images/C_Shield.png",
+    "image" : "images/C_Shields_Up.png",
     "type" : "BOOST",
     "class" : "neutral",
     "cost" : 1,
