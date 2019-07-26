@@ -26,12 +26,16 @@ class Enemy_Gr(sprite.Group):
         else:
             for sp in self.sprites():
                 sp.damage(card.damage)
-    def spawn(self):
+
+    def spawn(self, ec):
          # change to dynamically create enemies
-        enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'), 15)
-        enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'), 15)
-        enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'), 10)
-        self.add(enemy0, enemy1, enemy2)
+        #enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'), 15)
+        #enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'), 15)
+        #enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'), 10)
+        group = random.choice(ec.sprite_buffer)
+        for sp in group:
+            self.add(ec.copy(group))
+
 class Character(sprite.Sprite):
     def __init__(self, image, max_health=40):
         super().__init__()
