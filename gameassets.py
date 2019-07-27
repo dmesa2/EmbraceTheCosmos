@@ -12,6 +12,8 @@ class GameAssets:
         self.all_cards = cards.load_cards(os.path.join(ASSETS_PATH, CARD_PATH, 'cards.json'))
         self.class_cards = self.all_cards['fighter']
         self.neutral_cards = self.all_cards['neutral']
+        ec = cards.load_cards(os.path.join(ASSETS_PATH, CARD_PATH, 'enemy_cards.json'))['enemy']
+        self.enemy_cards = {e.name : e for e in ec}
 
     def get_cards(self, ncards, class_cards=False, neutral_cards=False):
         cards = []

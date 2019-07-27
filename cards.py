@@ -36,7 +36,7 @@ class Hand(pygame.sprite.Group):
             sp.update()
 
     def get_area(self):
-        width = CARD_WIDTH * len(self)
+        width = SCREEN_WIDTH * 4 / 6
         top = SCREEN_HEIGHT - CARD_HEIGHT
         left = (SCREEN_WIDTH  - width) / 2
         offset_x = SCREEN_WIDTH * 0.1

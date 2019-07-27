@@ -9,7 +9,7 @@ from gamestate import *
 X = 0
 Y = 1
 
-class Enemy_Gr(sprite.Group):
+class EnemyFleet(sprite.Group):
     def __init__(self):
         super().__init__()
 
@@ -24,9 +24,12 @@ class Enemy_Gr(sprite.Group):
     def process_attack(self, card, target=None):
         if target:
             target.damage(card.damage)
+            target.dead()
         else:
             for sp in self.sprites():
                 sp.damage(card.damage)
+            for sp in self.sprites():
+                sp.dead()
 
     def spawn(self, ec):
         group = random.choice(ec.groupings)
@@ -42,6 +45,10 @@ class Enemy_Gr(sprite.Group):
                   (650, 450)]
         for pos, sp in zip(coords, self.sprites()):
             sp.move(pos[0], pos[1])
+
+    def drain_shields(self):
+        for sp in self.sprites():
+            sp.drain_shields()
 
 class Character(sprite.Sprite):
     def __init__(self, img_path=None, image=None, max_health=40):
@@ -102,15 +109,34 @@ class Character(sprite.Sprite):
         self.draw_health_bar(screen)
 
     def draw_health_bar(self, screen):
+        font = pygame.font.Font(None, 16)
         if self.max_health > 0:
             if self.shield:
                 pygame.draw.rect(screen, BLUE, self.health_bar)
+                val = font.render(str(self.shield), True, YELLOW)
+                valr = val.get_rect(center=self.health_bar.center)
             else:
                 pygame.draw.rect(screen, GRAY, self.health_bar)
                 health = self.health_bar.copy()
                 health.width *= self.current_health / self.max_health
                 pygame.draw.rect(screen, RED, health)
+                val = font.render("{} / {}".format(self.current_health, self.max_health), True, YELLOW)
+                valr = val.get_rect(center=self.health_bar.center)
+            screen.blit(val, valr)
 
+    def damage(self, ndmg):
+        if self.shield:
+            if self.shield > ndmg:
+                self.shield -= ndmg
+            else:
+                ndmg -= self.shield
+                self.shield = 0
+                self.current_health -= ndmg
+        else:
+            self.current_health -= ndmg
+
+    def drain_shields(self):
+        self.shield = 0
 
 class Player(Character):
     def __init__(self, img_path=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), health=40):
@@ -148,6 +174,12 @@ class Player(Character):
         self.draw_hand()
         self.hand.position_hand()
 
+    def dead(self):
+        if self.current_health <= 0:
+            # explosion
+            return True
+        return False
+
 class Enemy(Character):
     def __init__(self, image, health, shield, atk_pattern):
         super().__init__(image=image, max_health=health)
@@ -155,18 +187,19 @@ class Enemy(Character):
         self.attacks = atk_pattern
         self.attack_idx = 0
 
-    def damage(self, ndmg):
-        if self.shield:
-            if self.shield > ndmg:
-                self.shield -= ndmg
-            else:
-                ndmg -= self.shield
-                self.shield = 0
-                self.current_health -= ndmg
-        else:
-            self.current_health -= ndmg
+    def dead(self):
         if self.current_health <= 0:
+            # explosion
             self.remove(self.groups())
+
+    def attack(self, player, assets):
+        card = assets.enemy_cards[self.attacks[self.attack_idx]]
+        if card.ctype == "BOOST":
+            self.shield += card.shield
+        elif card.ctype == "TARGET_ATTACK":
+            player.damage(card.damage)
+        self.attack_idx = self.attack_idx % len(self.attacks)
+
 
     def copy(self):
         return Enemy(self.image, self.max_health, self.shield, self.attacks)

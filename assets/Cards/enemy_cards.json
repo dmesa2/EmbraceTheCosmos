@@ -1,0 +1,57 @@
+[
+  {
+    "name" : "beam",
+    "id" : 900,
+    "image" : "images/Placeholder.png",
+    "type" : "TARGET_ATTACK",
+    "class" : "enemy",
+    "cost" : 0,
+    "damage" : 6,
+    "status" : {},
+    "shield" : 0
+  },
+  {
+    "name" : "heavy beam",
+    "id" : 901,
+    "image" : "images/Placeholder.png",
+    "type" : "TARGET_ATTACK",
+    "class" : "enemy",
+    "cost" : 0,
+    "damage" : 10,
+    "status" : {},
+    "shield" : 0
+  },
+  {
+    "name" : "mini shield",
+    "id" : 902,
+    "image" : "images/Placeholder.png",
+    "type" : "BOOST",
+    "class" : "enemy",
+    "cost" : 0,
+    "damage" : 0,
+    "status" : {},
+    "shield" : 6
+  },
+  {
+    "name" : "large shield",
+    "id" : 903,
+    "image" : "images/Placeholder.png",
+    "type" : "Boost",
+    "class" : "enemy",
+    "cost" : 0,
+    "damage" : 0,
+    "status" : {},
+    "shield" : 15
+  },
+  {
+    "name" : "sleep",
+    "id" : 904,
+    "image" : "images/Placeholder.png",
+    "type" : "Boost",
+    "class" : "enemy",
+    "cost" : 0,
+    "damage" : 0,
+    "status" : {},
+    "shield" : 0
+  }
+]

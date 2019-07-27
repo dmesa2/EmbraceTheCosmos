@@ -4,20 +4,21 @@ import pygame
 from pygame.locals import *
 import sys
 import cards
-from character import Player, Enemy, Enemy_Gr, Character, Target
+from character import Player, Enemy, EnemyFleet, Character, Target
 from gamestate import *
 from buttons import Button, GameBoard
 from gameassets import GameAssets
-
+from gameover import game_over
 
 def salvage(screen, board, player, assets):
     pygame.font.init()
     font = pygame.font.Font(None, 48)
     topbar = font.render("Salvage enemy ships", True, BRIGHT_WHITE)
     smfont = pygame.font.Font(None, 24)
-    skip = smfont.render("Skip", True, BRIGHT_WHITE)
+    skip = smfont.render("Skip", True, BRIGHT_RED)
     skip_rect = skip.get_rect()
     choose = smfont.render("Salvage Module", True, BRIGHT_WHITE)
+    choose_sel = smfont.render("Salvage Module", True, BRIGHT_GREEN)
     choose_rect = choose.get_rect()
     toprect = topbar.get_rect()
     card_choices = assets.get_cards(3, class_cards=True, neutral_cards=True)
@@ -65,7 +66,10 @@ def salvage(screen, board, player, assets):
                         else:
                             card.highlight = False
         screen.blit(skip, skip_rect)
-        screen.blit(choose, choose_rect)
+        if current_choice:
+            screen.blit(choose_sel, choose_rect)
+        else:
+            screen.blit(choose, choose_rect)
         choices.draw(screen)
         pygame.display.update()
 
@@ -87,11 +91,11 @@ def targeting(screen, board, card, player, enemy_group):
         player.hand.draw(screen)
         player.draw(screen)
         enemy_group.draw(screen)
-        enemy_group.draw_rect(screen)
+        #enemy_group.draw_rect(screen)
         #player.show_box(screen)
         position = pygame.mouse.get_pos()
         target.update(position)
-        pygame.draw.rect(screen, WHITE, card_area, 1)
+        #ygame.draw.rect(screen, WHITE, card_area, 1)
         if card.ctype == 'TARGET_ATTACK':
             # changes targeting recticle if a sucessful
             # collisoin with the enemy is detected
@@ -122,8 +126,10 @@ def targeting(screen, board, card, player, enemy_group):
     return ret
 
 def battle(screen, player, assets):
+    pygame.font.init()
     board = GameBoard("spacefield_a-000.png")
-    enemy_group = Enemy_Gr()
+    enemy_group = EnemyFleet()
+    player_turn = True
     # change to dynamically create enemies
     enemy_group.spawn(assets.enemy_choices)
 
@@ -146,29 +152,44 @@ def battle(screen, player, assets):
         # place the player object (the loaded image)
         player.draw(screen)
         enemy_group.draw(screen)
-        mouse_pos = pygame.mouse.get_pos()
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == MOUSEBUTTONDOWN:
-                if board.end_turn.collision(mouse_pos):
-                    player.end_turn(board)
-                else:
-                    for card in player.hand:
-                        if card.rect.collidepoint(mouse_pos):
-                            card.highlight = True
-                            if targeting(screen, board, card, player, enemy_group):
-                                player.hand.position_hand()
-                            card.highlight = False
-                            break
+        if player_turn:
+            mouse_pos = pygame.mouse.get_pos()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == MOUSEBUTTONDOWN:
+                    if board.end_turn.collision(mouse_pos):
+                        player.end_turn(board)
+                        enemy = (e for e in enemy_group.sprites())
+                        enemy_group.drain_shields()
+                        player_turn = False
+                    else:
+                        for card in player.hand:
+                            if card.rect.collidepoint(mouse_pos):
+                                card.highlight = True
+                                if targeting(screen, board, card, player, enemy_group):
+                                    player.hand.position_hand()
+                                card.highlight = False
+                                break
+                #elif event.type == MOUSEMOTION:
+            board.highlight(screen, mouse_pos)
+        else:
+            # enemies take their turns attacking
+            try:
+                cur = next(enemy)
+                cur.attack(player, assets)
+                pygame.time.wait(500)
+                if player.dead():
+                    return False
+            except StopIteration:
+                player_turn = True
+                player.drain_shields()
 
-            elif event.type == MOUSEMOTION:
-                board.highlight(screen, mouse_pos)
-
-            # update the display every iteration of this loop
-            pygame.display.update()
+        # update the display every iteration of this loop
+        pygame.display.update()
     salvage(screen, board, player, assets)
+    return True
 
 if __name__ == "__main__":
     # Run battle.py directly to test battle functionality
@@ -185,5 +206,8 @@ if __name__ == "__main__":
         player.all_cards.append(basics[1].copy())
     for _ in range(2):
         player.all_cards.append(assets.all_cards['fighter'][0].copy())
-    while True:
-        battle(screen, player, assets)
+    ret = True
+    while ret:
+        ret = battle(screen, player, assets)
+    game_over(screen)
+    pygame.display.quit()
