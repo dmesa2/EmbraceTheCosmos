@@ -17,8 +17,8 @@ BRIGHT_GRAY = (169,169,169)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-CARD_WIDTH = 93
-CARD_HEIGHT = 130
+CARD_WIDTH = int(93 * 1.5)
+CARD_HEIGHT = int(130 * 1.5)
 
 # PATHS
 ASSETS_PATH = os.path.join(os.getcwd(), 'assets')

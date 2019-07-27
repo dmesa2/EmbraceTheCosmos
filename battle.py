@@ -7,7 +7,67 @@ import cards
 from character import Player, Enemy, Enemy_Gr, Character, Target
 from gamestate import *
 from buttons import Button, GameBoard
+from gameassets import GameAssets
 
+
+def salvage(screen, board, player, assets):
+    pygame.font.init()
+    font = pygame.font.Font(None, 48)
+    topbar = font.render("Salvage enemy ships", True, BRIGHT_WHITE)
+    smfont = pygame.font.Font(None, 24)
+    skip = smfont.render("Skip", True, BRIGHT_WHITE)
+    skip_rect = skip.get_rect()
+    choose = smfont.render("Salvage Module", True, BRIGHT_WHITE)
+    choose_rect = choose.get_rect()
+    toprect = topbar.get_rect()
+    card_choices = assets.get_cards(3, class_cards=True, neutral_cards=True)
+    salvage_box = pygame.Rect((0, 0, SCREEN_WIDTH * (3 / 4), SCREEN_HEIGHT * (3 / 4)))
+    salvage_box.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    toprect.centerx = salvage_box.centerx
+    toprect.y = salvage_box.y
+    for card in card_choices:
+        card.rect.center = salvage_box.center
+        card.rect.move_ip(0, -50)
+    card_choices[0].rect.x -= CARD_WIDTH + 50
+    card_choices[2].rect.x += CARD_WIDTH + 50
+    skip_rect.midtop = card_choices[0].rect.midbottom
+    choose_rect.midtop = card_choices[2].rect.midbottom
+    skip_rect.y += 50
+    choose_rect.y += 50
+
+    choices = cards.Hand()
+    choices.add(*card_choices)
+    current_choice = None
+    while True:
+        board.draw(screen)
+        player.draw(screen)
+        pygame.time.Clock().tick(40)
+        screen.blit(topbar, toprect)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == MOUSEBUTTONDOWN:
+                position = pygame.mouse.get_pos()
+                if skip_rect.collidepoint(position):
+                    return
+                elif current_choice and choose_rect.collidepoint(position):
+                    player.all_cards.append(current_choice)
+                    return
+                else:
+                    current_choice = None
+                    position = pygame.mouse.get_pos()
+                    for card in choices:
+                        if card.rect.collidepoint(position):
+                            card.highlight = not card.highlight
+                            if card.highlight:
+                                current_choice = card
+                        else:
+                            card.highlight = False
+        screen.blit(skip, skip_rect)
+        screen.blit(choose, choose_rect)
+        choices.draw(screen)
+        pygame.display.update()
 
 def targeting(screen, board, card, player, enemy_group):
     '''
@@ -27,7 +87,7 @@ def targeting(screen, board, card, player, enemy_group):
         player.hand.draw(screen)
         player.draw(screen)
         enemy_group.draw(screen)
-        #enemy_group.draw_rect(screen)
+        enemy_group.draw_rect(screen)
         #player.show_box(screen)
         position = pygame.mouse.get_pos()
         target.update(position)
@@ -61,20 +121,11 @@ def targeting(screen, board, card, player, enemy_group):
     pygame.mouse.set_visible(True)
     return ret
 
-def battle(screen, player):
+def battle(screen, player, assets):
     board = GameBoard("spacefield_a-000.png")
     enemy_group = Enemy_Gr()
     # change to dynamically create enemies
-    enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'),
-        15, 0, [])
-    enemy0.move(SCREEN_WIDTH - 200, SCREEN_HEIGHT / 2 -100)
-    enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'),
-        15, 0, [])
-    enemy1.move(SCREEN_WIDTH - 150, SCREEN_HEIGHT / 2 - 200)
-    enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'),
-        10, 0, [])
-    enemy2.move(SCREEN_WIDTH - 150, SCREEN_HEIGHT / 2)
-    enemy_group.add(enemy0, enemy1, enemy2)
+    enemy_group.spawn(assets.enemy_choices)
 
     for enemy in enemy_group:
         enemy.flip()
@@ -117,26 +168,22 @@ def battle(screen, player):
 
             # update the display every iteration of this loop
             pygame.display.update()
-    board.draw(screen)
-    player.draw(screen)
-    salvage = pygame.Rect((0, 0, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    salvage.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-    pygame.draw.rect(screen, GRAY, salvage)
-    pygame.display.update()
-    
+    salvage(screen, board, player, assets)
+
 if __name__ == "__main__":
     # Run battle.py directly to test battle functionality
     pygame.init()
     pygame.display.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     # declare the size of the map
-
-    player = Player(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), 40)
+    assets = GameAssets()
+    player = Player()
     player.move(0, SCREEN_HEIGHT / 3)
-    all_cards = cards.load_cards(os.path.join(ASSETS_PATH, CARD_PATH, 'cards.json'))
+    basics = assets.all_cards['basic']
     for _ in range(4):
-        player.all_cards.append(all_cards[0].copy())
-        player.all_cards.append(all_cards[1].copy())
-    player.all_cards.append(all_cards[2].copy())
-    player.all_cards.append(all_cards[2].copy())
-    battle(screen, player)
+        player.all_cards.append(basics[0].copy())
+        player.all_cards.append(basics[1].copy())
+    for _ in range(2):
+        player.all_cards.append(assets.all_cards['fighter'][0].copy())
+    while True:
+        battle(screen, player, assets)

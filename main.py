@@ -10,7 +10,7 @@ from gamestate import *
 from map import *
 
 def main_menu(screen, myfont, player, map_call):
-    text = myfont.render("Play", True, BLACK) 
+    text = myfont.render("Play", True, BLACK)
     text2 = myfont.render("Help", True, BLACK)
     text3 = myfont.render("Quit", True, BLACK)
     menu_image = pygame.image.load('assets/Background/Embrace_The_Cosmos.png')
@@ -31,7 +31,7 @@ def main_menu(screen, myfont, player, map_call):
                 break
             pygame.display.update()
 
-# For the button function, I used sentdex tutorials from youtube.com 
+# For the button function, I used sentdex tutorials from youtube.com
 # as a reference
 def buttons(screen, text, text2, text3, player, map_call):
     pygame.draw.rect(screen, GRAY,(340,250,170,50))
@@ -47,7 +47,7 @@ def buttons(screen, text, text2, text3, player, map_call):
            map_call.main_map(screen)
     else:
         pygame.draw.rect(screen, GRAY,(340,250,170,50))
-        
+
     if 340+170 > mouse[0] > 340 and 350+50 > mouse[1] > 350:
          pygame.draw.rect(screen, BRIGHT_GRAY,(340,350,170,50))
     else:
@@ -70,7 +70,7 @@ if __name__=='__main__':
     pygame.display.init()
     pygame.font.init()
     pygame.mixer.init()
-    
+
     myfont = pygame.font.Font('freesansbold.ttf', 32)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -81,7 +81,7 @@ if __name__=='__main__':
     bg = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "spacefield_a-000.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
     menu = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "nebula01.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
     #pg = Player()
-    player = Player(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), 100, 500)
+    player = Player()
     #pg.add(player)
     map_call = Map()
 

@@ -2,12 +2,13 @@ import pygame
 from gamestate import *
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, image, image_alt, x, y):
+    def __init__(self, image, image_alt, x, y, rescale_factor=None):
         super().__init__()
         self.image = pygame.image.load(os.path.join(ASSETS_PATH, 'Misc', image))
-        self.image = pygame.transform.scale(self.image, (48, 48))
         self.image_alt = pygame.image.load(os.path.join(ASSETS_PATH, 'Misc', image_alt))
-        self.image_alt = pygame.transform.scale(self.image_alt, (48, 48))
+        if rescale_factor:
+            self.image = pygame.transform.scale(self.image, rescale_factor)
+            self.image_alt = pygame.transform.scale(self.image_alt, rescale_factor)
         self.rect = self.image.get_rect(topleft = (x, y))
 
     def draw(self, screen, alt=None):
@@ -21,18 +22,18 @@ class Button(pygame.sprite.Sprite):
 
     def collision(self, position):
         return self.rect.collidepoint(position)
-        
+
 class GameBoard:
     def __init__(self, bg_img):
         self.background = pygame.transform.scale(pygame.image.load(
                 os.path.join(ASSETS_PATH, "Background", bg_img)),
                 (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.end_turn = Button('end_turn.png', 'end_turn_alt.png',
-                SCREEN_WIDTH - 48, SCREEN_HEIGHT - 48)
+                SCREEN_WIDTH - 48, SCREEN_HEIGHT - 48, (48, 48))
         self.deck = Button('deck_icon.png', 'deck_icon_alt.png',
-                24, SCREEN_HEIGHT - 72 - 48)
+                24, SCREEN_HEIGHT - 72 - 48, (48, 48))
         self.graveyard = Button('pirate-grave.png', 'pirate-grave_alt.png',
-                24, SCREEN_HEIGHT - 72)
+                24, SCREEN_HEIGHT - 72, (48, 48))
 
     def draw(self, screen):
         screen.blit(self.background, (0,0))

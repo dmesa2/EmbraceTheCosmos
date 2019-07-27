@@ -16,6 +16,7 @@ class Enemy_Gr(sprite.Group):
     def draw_rect(self, screen):
         for s in self.sprites():
             s.show_box(screen)
+
     def draw(self, screen):
         for sp in self.sprites():
             sp.draw(screen)
@@ -28,18 +29,27 @@ class Enemy_Gr(sprite.Group):
                 sp.damage(card.damage)
 
     def spawn(self, ec):
-         # change to dynamically create enemies
-        #enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'), 15)
-        #enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'), 15)
-        #enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'), 10)
-        group = random.choice(ec.sprite_buffer)
+        group = random.choice(ec.groupings)
         for sp in group:
-            self.add(ec.copy(group))
+            self.add(ec.sprite_buffer[sp].copy())
+        self.place()
+
+    def place(self):
+        coords = [(450, 250),
+                  (550, 150),
+                  (650, 50),
+                  (550, 350),
+                  (650, 450)]
+        for pos, sp in zip(coords, self.sprites()):
+            sp.move(pos[0], pos[1])
 
 class Character(sprite.Sprite):
-    def __init__(self, image, max_health=40):
+    def __init__(self, img_path=None, image=None, max_health=40):
         super().__init__()
-        self.image = pygame.image.load(image)
+        if img_path:
+            self.image = pygame.image.load(img_path)
+        else:
+            self.image = image
         self.pos = [0, 0]
         self.rect = self.image.get_rect(topleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
@@ -69,6 +79,10 @@ class Character(sprite.Sprite):
     def rescale_factor(self, n):
         width, height = self.image.get_size()
         self.image = pygame.transform.scale(self.image, (width * n, height * n))
+        self.update()
+
+    def copy(self):
+        return Character(image=self.image)
 
     def move(self, x, y):
         self.pos = [x, y]
@@ -99,10 +113,11 @@ class Character(sprite.Sprite):
 
 
 class Player(Character):
-    def __init__(self, image=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), health=40, x=0, y=0):
-        super().__init__(image, health, x, y)
+    def __init__(self, img_path=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), health=40):
+        super().__init__(img_path=img_path, max_health=health)
         self.max_handsize = 3
         self.all_cards = []
+        self.ctype = 'fighter'
         # battle hands
         self.hand = cards.Hand()
         self.graveyard = []
@@ -135,7 +150,7 @@ class Player(Character):
 
 class Enemy(Character):
     def __init__(self, image, health, shield, atk_pattern):
-        super().__init__(image, health)
+        super().__init__(image=image, max_health=health)
         self.shield = shield
         self.attacks = atk_pattern
         self.attack_idx = 0
@@ -152,6 +167,9 @@ class Enemy(Character):
             self.current_health -= ndmg
         if self.current_health <= 0:
             self.remove(self.groups())
+
+    def copy(self):
+        return Enemy(self.image, self.max_health, self.shield, self.attacks)
 
 class Target(sprite.Sprite):
     def __init__(self):

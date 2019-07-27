@@ -3,6 +3,7 @@ import os
 from pygame.locals import *
 from gamestate import *
 import json
+from collections import defaultdict
 
 class Hand(pygame.sprite.Group):
     def __init__(self):
@@ -45,12 +46,15 @@ class Hand(pygame.sprite.Group):
 
 
 class Card(pygame.sprite.Sprite):
-    def __init__(self, image_path, x, y, name, ctype, cost, pclass, damage, shield):
+    def __init__(self, x, y, name, ctype, cost, pclass, damage, shield, image_path=None, image=None):
         super().__init__()
-        pth = os.path.join(CARD_PATH, image_path)
+        if image_path:
+            pth = os.path.join(CARD_PATH, image_path)
+            self.image_path = image_path
+            self.image = pygame.transform.scale(pygame.image.load(pth), (CARD_WIDTH, CARD_HEIGHT))
+        else:
+            self.image = image
         self.id = 0
-        self.image_path = image_path
-        self.image = pygame.transform.scale(pygame.image.load(pth), (CARD_WIDTH, CARD_HEIGHT))
         self.pos = [x, y]
         self.rect = self.image.get_rect(topleft=self.pos)
         self.highlight = False
@@ -62,7 +66,7 @@ class Card(pygame.sprite.Sprite):
         self.cost = cost
         # Dictionary to hold alternate effects
         self.status_effect = dict()
-        # Player Class e.g. FIGHTER or NEUTRAL
+        # Player Class e.g. fighter
         self.pclass = pclass
         self.damage = damage
         self.shield = shield
@@ -74,8 +78,9 @@ class Card(pygame.sprite.Sprite):
         pygame.draw.rect(screen, color, self.rect, width)
 
     def copy(self):
-        return Card(self.image_path, self.pos[0], self.pos[1], self.name,
-                    self.ctype, self.cost, self.pclass, self.damage, self.shield)
+        return Card(self.pos[0], self.pos[1], self.name,
+                    self.ctype, self.cost, self.pclass, self.damage,
+                    self.shield, image=self.image)
 
     def process_card(self, player, enemy_group):
         position = pygame.mouse.get_pos()
@@ -91,11 +96,14 @@ class Card(pygame.sprite.Sprite):
         player.graveyard.append(self)
 
 def read_card(card):
-    return Card(card['image'], 0, 0, card['name'], card['type'], card['cost'],
-             card['class'], card['damage'], card['shield'])
+    return Card(0, 0, card['name'], card['type'], card['cost'],
+             card['class'], card['damage'], card['shield'],
+             image_path=card['image'])
 
 def load_cards(fname):
     with open(fname, 'r') as f:
         cards = json.load(f)
-    all_cards = [read_card(card) for card in cards]
+    all_cards = defaultdict(list)
+    for card in cards:
+        all_cards[card['class']].append(read_card(card))
     return all_cards

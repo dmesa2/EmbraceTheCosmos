@@ -13,7 +13,7 @@ class EnemyChoice:
         self.sprite_buffer = self.load_enemies(path)
 
     def read_enemy(self, sp):
-        img = os.path.join(ASSETS_PATH, SHIPS_PATH, sp['image_path'])
+        img = pygame.image.load(os.path.join(ASSETS_PATH, SHIPS_PATH, sp['image_path']))
         return character.Enemy(img, sp['max_health'],
             sp['shield'], sp['attack_pattern'])
 
@@ -32,9 +32,10 @@ class EnemyChoice:
         b = 'bumble'
         o = 'orange'
 
-        enemy_groups = [[z],
+        enemy_groups = [[z, g],
                         [g, o, g],
                         [b, o, o],
-                        [b, o, g],
+                        [b, o, z],
                         [b, b]]
+
         return enemy_groups
