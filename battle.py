@@ -65,12 +65,15 @@ def battle(screen, player):
     board = GameBoard("spacefield_a-000.png")
     enemy_group = Enemy_Gr()
     # change to dynamically create enemies
-    enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'), 15,
-        SCREEN_WIDTH - 200, SCREEN_HEIGHT / 2 -100)
-    enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'), 15,
-        SCREEN_WIDTH - 150, SCREEN_HEIGHT / 2 - 200)
-    enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'), 10,
-        SCREEN_WIDTH - 150, SCREEN_HEIGHT / 2)
+    enemy0 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship4/Ship4.png'),
+        15, 0, [])
+    enemy0.move(SCREEN_WIDTH - 200, SCREEN_HEIGHT / 2 -100)
+    enemy1 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship2/Ship2.png'),
+        15, 0, [])
+    enemy1.move(SCREEN_WIDTH - 150, SCREEN_HEIGHT / 2 - 200)
+    enemy2 = Enemy(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship5/Ship5.png'),
+        10, 0, [])
+    enemy2.move(SCREEN_WIDTH - 150, SCREEN_HEIGHT / 2)
     enemy_group.add(enemy0, enemy1, enemy2)
 
     for enemy in enemy_group:
@@ -120,6 +123,7 @@ def battle(screen, player):
     salvage.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     pygame.draw.rect(screen, GRAY, salvage)
     pygame.display.update()
+    
 if __name__ == "__main__":
     # Run battle.py directly to test battle functionality
     pygame.init()
@@ -127,8 +131,8 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     # declare the size of the map
 
-    player = Player(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'),
-            40, 0, SCREEN_HEIGHT / 3)
+    player = Player(os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), 40)
+    player.move(0, SCREEN_HEIGHT / 3)
     all_cards = cards.load_cards(os.path.join(ASSETS_PATH, CARD_PATH, 'cards.json'))
     for _ in range(4):
         player.all_cards.append(all_cards[0].copy())
