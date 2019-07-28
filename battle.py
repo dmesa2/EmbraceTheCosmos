@@ -134,11 +134,11 @@ def targeting(screen, board, card, player, enemy_group):
     if card.ctype == 'TARGET_ATTACK':
         targeted = [sp for sp in enemy_group if sp.collision(position)]
         if targeted:
-            card.process_card(player, enemy_group)
+            card.process_card(screen, player, enemy_group)
             ret = True
     else:
         if not card_area.collidepoint(position):
-            card.process_card(player, enemy_group)
+            card.process_card(screen, player, enemy_group)
             ret = True
     pygame.mouse.set_visible(True)
     return ret
@@ -203,7 +203,7 @@ def battle(screen, player, assets):
                 cur = next(enemy)
                 cur.attack(player, assets)
                 pygame.time.wait(200)
-                if player.dead():
+                if player.dead(screen):
                     return False
             except StopIteration:
                 player_turn = True

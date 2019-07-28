@@ -1,6 +1,7 @@
 [
     {
         "name" : "grass",
+        "model" : "Ship1",
         "image_path" : "Ship1/Ship1.png",
         "max_health" : 30,
         "shield" : 0,
@@ -8,6 +9,7 @@
     },
     {
         "name" : "zap",
+        "model" : "Ship2",
         "image_path" : "Ship2/Ship2.png",
         "max_health" : 35,
         "shield" : 0,
@@ -16,6 +18,7 @@
     },
     {
         "name" : "bumble",
+        "model" : "Ship5",
         "image_path" : "Ship5/Ship5.png",
         "max_health" : 20,
         "shield" : 0,
@@ -23,6 +26,7 @@
     },
     {
         "name" : "orange",
+        "model" : "Ship4",
         "image_path" : "Ship4/Ship4.png",
         "max_health" : 10,
         "shield" : 0,

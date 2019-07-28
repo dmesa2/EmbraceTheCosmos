@@ -21,15 +21,15 @@ class EnemyFleet(sprite.Group):
         for sp in self.sprites():
             sp.draw(screen)
 
-    def process_attack(self, card, target=None):
+    def process_attack(self, screen, card, target=None):
         if target:
             target.damage(card.damage)
-            target.dead()
+            target.dead(screen)
         else:
             for sp in self.sprites():
                 sp.damage(card.damage)
             for sp in self.sprites():
-                sp.dead()
+                sp.dead(screen)
 
     def spawn(self, ec):
         group = random.choice(ec.groupings)
@@ -51,12 +51,19 @@ class EnemyFleet(sprite.Group):
             sp.drain_shields()
 
 class Character(sprite.Sprite):
-    def __init__(self, img_path=None, image=None, max_health=40):
+    def __init__(self, img_path=None, image=None, explosion_path=None,
+                explosions=None, max_health=40):
         super().__init__()
         if img_path:
             self.image = pygame.image.load(img_path)
         else:
             self.image = image
+        if explosion_path:
+            path = os.path.join(EXPLOSIONS_PATH, explosion_path + '_Explosion')
+            imgs = list(os.scandir(path))
+            self.explosions = [pygame.image.load(png.path).convert_alpha() for png in imgs]
+        else:
+            self.explosions = explosions
         self.pos = [0, 0]
         self.rect = self.image.get_rect(topleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
@@ -138,16 +145,25 @@ class Character(sprite.Sprite):
     def drain_shields(self):
         self.shield = 0
 
+    def explode(self, screen):
+        for boom in self.explosions:
+            rect = boom.get_rect(center=self.rect.center)
+            screen.blit(boom, rect)
+            pygame.display.update()
+            pygame.time.wait(150)
+
 class Player(Character):
     def __init__(self,
-                img_path=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'),
-                health=40, power=3, hand=3):
-        super().__init__(img_path=img_path, max_health=health)
+                img_path=os.path.join(SHIPS_PATH, 'Ship3/Ship3.png'),
+                ctype='fighter', health=40, power=3, hand=3):
+        super().__init__(img_path=img_path, max_health=health, explosion_path='Ship3')
         self.max_handsize = hand
         self.max_power = power
         self.power = 0
+        # all cards in the players current deck
         self.all_cards = []
-        self.ctype = 'fighter'
+        # player class
+        self.ctype = ctype
         # battle hands
         self.hand = cards.Hand()
         self.graveyard = []
@@ -178,22 +194,22 @@ class Player(Character):
         self.draw_hand()
         self.hand.position_hand()
 
-    def dead(self):
+    def dead(self, screen):
         if self.current_health <= 0:
-            # explosion
+            self.explode(screen)
             return True
         return False
 
 class Enemy(Character):
-    def __init__(self, image, health, shield, atk_pattern):
-        super().__init__(image=image, max_health=health)
+    def __init__(self, image, health, shield, atk_pattern, explosion_path=None, explosions=None):
+        super().__init__(image=image, max_health=health, explosion_path=explosion_path, explosions=explosions)
         self.shield = shield
         self.attacks = atk_pattern
         self.attack_idx = 0
 
-    def dead(self):
+    def dead(self, screen):
         if self.current_health <= 0:
-            # explosion
+            self.explode(screen)
             self.remove(self.groups())
 
     def attack(self, player, assets):
@@ -202,11 +218,11 @@ class Enemy(Character):
             self.shield += card.shield
         elif card.ctype == "TARGET_ATTACK":
             player.damage(card.damage)
-        self.attack_idx = self.attack_idx % len(self.attacks)
+        self.attack_idx = (self.attack_idx + 1) % len(self.attacks)
 
 
     def copy(self):
-        return Enemy(self.image, self.max_health, self.shield, self.attacks)
+        return Enemy(self.image, self.max_health, self.shield, self.attacks, explosions=self.explosions)
 
 class Target(sprite.Sprite):
     def __init__(self):
