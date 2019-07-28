@@ -21,4 +21,6 @@ class GameAssets:
             cards += self.class_cards
         if neutral_cards:
             cards += self.neutral_cards
-        return random.choices(cards, k=ncards)
+        ret = random.choices(cards, k=ncards)
+        ret = [card.copy() for card in ret]
+        return ret

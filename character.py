@@ -142,7 +142,8 @@ class Character(sprite.Sprite):
                 self.current_health -= ndmg
         else:
             self.current_health -= ndmg
-
+        self.current_health = max(0, self.current_health)
+        
     def drain_shields(self):
         self.shield = 0
 
@@ -153,7 +154,7 @@ class Character(sprite.Sprite):
         enemy_group.draw(screen)
         if self in enemy_group:
             self.remove(self.groups())
-
+        pygame.display.update()
         for boom in self.explosions:
             rect = boom.get_rect(center=self.rect.center)
             screen.blit(boom, rect)
