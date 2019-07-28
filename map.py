@@ -40,16 +40,18 @@ class Icon(pygame.sprite.Sprite):
 class Map:
   def __init__(self):
      self.icons = MapIcons()
+     self.images = {}
      #Boss
      bi = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech-small.png'), (70, 70))
      bi_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech.png'), (85, 85))
      self.icons.add(Icon(bi, bi_lg, 'boss', 355, 35))
+     self.images['boss'] = (bi, bi_lg)
      #Minions
      minion = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-small.png'), (40, 40))
      minion_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot.png'), (50, 50))
+     self.images['minion'] = (minion, minion_lg)
      self.icons.add(Icon(minion, minion_lg, 'minion', 65, 155))
      self.icons.add(Icon(minion, minion_lg, 'minion', 145, 190))
-     #self.icons.add(Icon(minion, minion_lg, 'minion', 140, 90))
      self.icons.add(Icon(minion, minion_lg, 'minion', 122, 410))
      self.icons.add(Icon(minion, minion_lg, 'minion', 122, 498))
      self.icons.add(Icon(minion, minion_lg, 'minion', 192, 560))
@@ -64,6 +66,7 @@ class Map:
      #Stores
      store = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank-small.png'), (40, 40))
      store_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank.png'), (50, 50))
+     self.images['shop'] = (store, store_lg)
      self.icons.add(Icon(store, store_lg, 'shop', 121, 312))
      self.icons.add(Icon(store, store_lg, 'shop', 695, 151))
      self.icons.add(Icon(store, store_lg, 'shop', 602, 558))
@@ -72,6 +75,7 @@ class Map:
      #Unknown
      unk = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-small.png'), (40, 40))
      unk_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty.png'), (50, 50))
+     self.images['unknown'] = (unk, unk_lg)
      self.icons.add(Icon(unk, unk_lg, 'unknown', 38, 550))
      self.icons.add(Icon(unk, unk_lg, 'unknown', 408, 560))
      self.icons.add(Icon(unk, unk_lg, 'unknown', 570, 320))
