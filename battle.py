@@ -110,9 +110,9 @@ def targeting(screen, board, card, player, enemy_group):
         position = pygame.mouse.get_pos()
         target.update(position)
         # Debugging rectangle hitboxes
-        board._show_boxes(screen)
-        enemy_group.draw_rect(screen)
-        player.show_box(screen)
+        #board._show_boxes(screen)
+        #enemy_group.draw_rect(screen)
+        #player.show_box(screen)
 
         if card.ctype == 'TARGET_ATTACK':
             # changes targeting recticle if a sucessful
@@ -128,17 +128,16 @@ def targeting(screen, board, card, player, enemy_group):
                 screen.blit(target.get_bst(), position)
             else:
                 screen.blit(target.get_img(), position)
-        target.show_box(screen)
         pygame.event.pump()
         pygame.display.update()
     if card.ctype == 'TARGET_ATTACK':
         targeted = [sp for sp in enemy_group if sp.collision(position)]
         if targeted:
-            card.process_card(screen, player, enemy_group)
+            card.process_card(player, enemy_group)
             ret = True
     else:
         if not card_area.collidepoint(position):
-            card.process_card(screen, player, enemy_group)
+            card.process_card(player, enemy_group)
             ret = True
     pygame.mouse.set_visible(True)
     return ret
@@ -150,6 +149,7 @@ def battle(screen, player, assets):
     player_turn = True
     player.power = player.max_power
     alwayson = False
+    enemy = iter(())
     # change to dynamically create enemies
     enemy_group.spawn(assets.enemy_choices)
 
@@ -190,6 +190,7 @@ def battle(screen, player, assets):
                                 card.highlight = True
                                 if targeting(screen, board, card, player, enemy_group):
                                     player.hand.position_hand()
+                                    enemy_group.dead(screen, board, player, enemy_group)
                                     player.power -= card.cost
                                 card.highlight = False
                                 break
@@ -203,7 +204,7 @@ def battle(screen, player, assets):
                 cur = next(enemy)
                 cur.attack(player, assets)
                 pygame.time.wait(200)
-                if player.dead(screen):
+                if player.dead(screen, board, player, enemy_group):
                     return False
             except StopIteration:
                 player_turn = True

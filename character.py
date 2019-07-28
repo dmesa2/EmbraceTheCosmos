@@ -21,15 +21,16 @@ class EnemyFleet(sprite.Group):
         for sp in self.sprites():
             sp.draw(screen)
 
-    def process_attack(self, screen, card, target=None):
+    def process_attack(self, card, target=None):
         if target:
             target.damage(card.damage)
-            target.dead(screen)
         else:
             for sp in self.sprites():
                 sp.damage(card.damage)
-            for sp in self.sprites():
-                sp.dead(screen)
+
+    def dead(self, screen, board, player, enemy_group):
+        for sp in self.sprites():
+            sp.dead(screen, board, player, enemy_group)
 
     def spawn(self, ec):
         group = random.choice(ec.groupings)
@@ -145,7 +146,14 @@ class Character(sprite.Sprite):
     def drain_shields(self):
         self.shield = 0
 
-    def explode(self, screen):
+    def explode(self, screen, board, player, enemy_group):
+        player.hand.draw(screen)
+        board.draw(screen, player.power, player.max_power)
+        player.draw(screen)
+        enemy_group.draw(screen)
+        if self in enemy_group:
+            self.remove(self.groups())
+
         for boom in self.explosions:
             rect = boom.get_rect(center=self.rect.center)
             screen.blit(boom, rect)
@@ -194,9 +202,9 @@ class Player(Character):
         self.draw_hand()
         self.hand.position_hand()
 
-    def dead(self, screen):
+    def dead(self, screen, board, player, enemy_group):
         if self.current_health <= 0:
-            self.explode(screen)
+            self.explode(screen, board, player, enemy_group)
             return True
         return False
 
@@ -207,10 +215,10 @@ class Enemy(Character):
         self.attacks = atk_pattern
         self.attack_idx = 0
 
-    def dead(self, screen):
+    def dead(self, screen, board, player, enemy_group):
         if self.current_health <= 0:
-            self.explode(screen)
-            self.remove(self.groups())
+            self.explode(screen, board, player, enemy_group)
+
 
     def attack(self, player, assets):
         card = assets.enemy_cards[self.attacks[self.attack_idx]]

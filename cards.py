@@ -84,16 +84,16 @@ class Card(pygame.sprite.Sprite):
                     self.ctype, self.cost, self.pclass, self.damage,
                     self.shield, image=self.image)
 
-    def process_card(self, screen, player, enemy_group):
+    def process_card(self, player, enemy_group):
         position = pygame.mouse.get_pos()
         if self.ctype == "TARGET_ATTACK":
             targeted = [sp for sp in enemy_group if sp.collision(position)]
             if targeted:
-                enemy_group.process_attack(screen, self, targeted[0])
+                enemy_group.process_attack(self, targeted[0])
         elif self.ctype == "BOOST":
             player.shield += self.shield
         elif self.ctype == "AREA_ATTACK":
-            enemy_group.process_attack(screen, self)
+            enemy_group.process_attack(self)
         player.hand.remove(self)
         player.graveyard.append(self)
 
