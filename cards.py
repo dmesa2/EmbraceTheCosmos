@@ -19,10 +19,10 @@ class Hand(pygame.sprite.Group):
             if card.highlight:
                 card.show_box(screen, CYAN, 2)
 
-    def ddraw(self, screen, position):
+    def ddraw(self, screen, position, power):
         for card in self.sprites():
             screen.blit(card.image, card.rect)
-            if card.rect.collidepoint(position):
+            if card.cost <= power and card.rect.collidepoint(position):
                 card.show_box(screen, CYAN, 2)
 
     def position_hand(self):

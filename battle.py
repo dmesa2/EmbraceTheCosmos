@@ -103,7 +103,7 @@ def targeting(screen, board, card, player, enemy_group):
 
     while pygame.mouse.get_pressed()[0]:
         pygame.time.Clock().tick(40)
-        board.draw(screen)
+        board.draw(screen, player.power, player.max_power)
         player.hand.draw(screen)
         player.draw(screen)
         enemy_group.draw(screen)
@@ -166,9 +166,9 @@ def battle(screen, player, assets):
     while enemy_group:
         pygame.time.Clock().tick(40)
         # draw background
-        board.draw(screen)
+        board.draw(screen, player.power, player.max_power)
         # dynamic hand animation
-        player.hand.ddraw(screen, pygame.mouse.get_pos())
+        player.hand.ddraw(screen, pygame.mouse.get_pos(), player.power)
         # place the player object (the loaded image)
         player.draw(screen)
         enemy_group.draw(screen)
@@ -202,7 +202,7 @@ def battle(screen, player, assets):
             try:
                 cur = next(enemy)
                 cur.attack(player, assets)
-                pygame.time.wait(500)
+                pygame.time.wait(200)
                 if player.dead():
                     return False
             except StopIteration:

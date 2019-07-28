@@ -34,12 +34,15 @@ class GameBoard:
                 24, SCREEN_HEIGHT - 72 - 48, (48, 48))
         self.graveyard = Button('pirate-grave.png', 'pirate-grave_alt.png',
                 24, SCREEN_HEIGHT - 72, (48, 48))
+        self.power = Button('battery-pack.png', 'battery-pack-alt.png',
+                24, SCREEN_HEIGHT - 72 - 48 - 48, (48, 48))
 
-    def draw(self, screen):
+    def draw(self, screen, cur_power, max_power):
         screen.blit(self.background, (0,0))
         self.end_turn.draw(screen)
         self.deck.draw(screen)
         self.graveyard.draw(screen)
+        self.power.draw(screen, cur_power == 0)
 
     def _show_boxes(self, screen):
         self.end_turn._draw_box(screen)
