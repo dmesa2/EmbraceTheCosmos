@@ -1,7 +1,9 @@
 import pygame
 import os
 from pygame.locals import *
-from battle import *
+from gamestate import *
+from battle import battle
+from repair import repair
 
 class MapIcons(pygame.sprite.Group):
     def __init__(self):
@@ -92,7 +94,10 @@ class Map:
             elif event.type == MOUSEBUTTONDOWN:
                 position = pygame.mouse.get_pos()
                 for sp in self.icons.sprites():
-                    if sp.collide(position) and sp.type == 'minion':
-                        battle(screen, player, assets)
+                    if sp.collide(position):
+                        if sp.type == 'minion':
+                            battle(screen, player, assets)
+                        elif sp.type == 'unknown':
+                            repair(screen, player, assets)
 
             pygame.display.update()
