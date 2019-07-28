@@ -144,6 +144,7 @@ def targeting(screen, board, card, player, enemy_group):
 
 def battle(screen, player, assets):
     pygame.font.init()
+    player.move(0, SCREEN_HEIGHT / 3)
     board = GameBoard("spacefield_a-000.png")
     enemy_group = EnemyFleet()
     player_turn = True

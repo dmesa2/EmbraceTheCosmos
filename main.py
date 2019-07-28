@@ -8,8 +8,9 @@ from cards import Card, Hand
 from character import *
 from gamestate import *
 from map import *
+from gameassets import GameAssets
 
-def main_menu(screen, myfont, player, map_call):
+def main_menu(screen, myfont, player, map_call, assets):
     text = myfont.render("Play", True, BLACK)
     text2 = myfont.render("Help", True, BLACK)
     text3 = myfont.render("Quit", True, BLACK)
@@ -21,7 +22,7 @@ def main_menu(screen, myfont, player, map_call):
         screen.blit(menu, (0, 0))
         screen.blit(menu_image,(5,50))
 
-        buttons(screen, text, text2, text3, player, map_call)
+        buttons(screen, text, text2, text3, player, map_call, assets)
 
         #print(mouse)
         for event in pygame.event.get():
@@ -33,7 +34,7 @@ def main_menu(screen, myfont, player, map_call):
 
 # For the button function, I used sentdex tutorials from youtube.com
 # as a reference
-def buttons(screen, text, text2, text3, player, map_call):
+def buttons(screen, text, text2, text3, player, map_call, assets):
     pygame.draw.rect(screen, GRAY,(340,250,170,50))
     pygame.draw.rect(screen, GRAY,(340,350,170,50))
     pygame.draw.rect(screen, GRAY,(340,450,170,50))
@@ -44,7 +45,7 @@ def buttons(screen, text, text2, text3, player, map_call):
         pygame.draw.rect(screen, BRIGHT_GRAY,(340,250,170,50))
         if click[0] == 1:
            #battle(screen, pg)
-           map_call.main_map(screen)
+           map_call.main_map(screen, player, assets)
     else:
         pygame.draw.rect(screen, GRAY,(340,250,170,50))
 
@@ -73,18 +74,22 @@ if __name__=='__main__':
 
     myfont = pygame.font.Font('freesansbold.ttf', 32)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
+    assets = GameAssets()
     # initilaize the game object
 
     # intialize the display surface. this surface is what pygame draws
     # things on
     bg = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "spacefield_a-000.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
     menu = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "nebula01.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
-    #pg = Player()
     player = Player()
-    #pg.add(player)
+    # Initialize Deck
+    basics = assets.all_cards['basic']
+    for _ in range(4):
+        player.all_cards.append(basics[0].copy())
+        player.all_cards.append(basics[1].copy())
+    for _ in range(2):
+        player.all_cards.append(assets.all_cards['fighter'][0].copy())
     map_call = Map()
 
 
-    main_menu(screen, myfont, player, map_call)
-    #battle(screen, pg)
+    main_menu(screen, myfont, player, map_call, assets)
