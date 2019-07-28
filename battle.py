@@ -56,7 +56,7 @@ def salvage(screen, board, player, assets):
     choices.add(*card_choices)
     current_choice = None
     while True:
-        board.draw(screen)
+        board.draw(screen, player.power, player.max_power)
         player.draw(screen)
         pygame.time.Clock().tick(40)
         screen.blit(topbar, toprect)

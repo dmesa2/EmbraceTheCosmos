@@ -25,17 +25,19 @@ class Button(pygame.sprite.Sprite):
 
 class GameBoard:
     def __init__(self, bg_img):
+        pygame.font.init()
+        self.font = pygame.font.Font(None, ICON_SIZE)
         self.background = pygame.transform.scale(pygame.image.load(
                 os.path.join(ASSETS_PATH, "Background", bg_img)),
                 (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.end_turn = Button('end_turn.png', 'end_turn_alt.png',
-                SCREEN_WIDTH - 48, SCREEN_HEIGHT - 48, (48, 48))
+                SCREEN_WIDTH - ICON_SIZE, SCREEN_HEIGHT - ICON_SIZE, (ICON_SIZE, ICON_SIZE))
         self.deck = Button('deck_icon.png', 'deck_icon_alt.png',
-                24, SCREEN_HEIGHT - 72 - 48, (48, 48))
+                24, SCREEN_HEIGHT - 72 - ICON_SIZE, (ICON_SIZE, ICON_SIZE))
         self.graveyard = Button('pirate-grave.png', 'pirate-grave_alt.png',
-                24, SCREEN_HEIGHT - 72, (48, 48))
+                24, SCREEN_HEIGHT - 72, (ICON_SIZE, ICON_SIZE))
         self.power = Button('battery-pack.png', 'battery-pack-alt.png',
-                24, SCREEN_HEIGHT - 72 - 48 - 48, (48, 48))
+                24, SCREEN_HEIGHT - 72 - ICON_SIZE - ICON_SIZE, (ICON_SIZE, ICON_SIZE))
 
     def draw(self, screen, cur_power, max_power):
         screen.blit(self.background, (0,0))
@@ -43,6 +45,9 @@ class GameBoard:
         self.deck.draw(screen)
         self.graveyard.draw(screen)
         self.power.draw(screen, cur_power == 0)
+        power = self.font.render("{} / {}".format(cur_power, max_power), False, CYAN)
+        prect = power.get_rect(center=self.power.rect.center)
+        screen.blit(power, ((prect.x + ICON_SIZE) * 1.2, prect.y))
 
     def _show_boxes(self, screen):
         self.end_turn._draw_box(screen)
