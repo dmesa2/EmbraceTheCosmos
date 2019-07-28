@@ -11,26 +11,42 @@ from gameassets import GameAssets
 from gameover import game_over
 
 def salvage(screen, board, player, assets):
+    '''
+    Collect salvage from defeated enemies
+    Three card options are displayed to the player
+    The player can choose one card to add to their deck
+    or use skip to not add any items
+    The Salvage option highlights green when a valid card is chosen
+    Upon choosing a valid salvage or skip control passes back
+    to battle function to clean up
+    '''
+    # Card options are chosen from class and neutral cards
+    card_choices = assets.get_cards(3, class_cards=True, neutral_cards=True)
     pygame.font.init()
-    font = pygame.font.Font(None, 48)
-    topbar = font.render("Salvage enemy ships", True, BRIGHT_WHITE)
+    # Main title for salvage card
+    title = pygame.font.Font(None, 48)
+    topbar = title.render("Salvage enemy ships", True, BRIGHT_WHITE)
+    # smaller font for buttons
     smfont = pygame.font.Font(None, 24)
     skip = smfont.render("Skip", True, BRIGHT_RED)
     skip_rect = skip.get_rect()
-    choose = smfont.render("Salvage Module", True, BRIGHT_WHITE)
-    choose_sel = smfont.render("Salvage Module", True, BRIGHT_GREEN)
+    choose = smfont.render("Salvage", True, BRIGHT_WHITE)
+    choose_sel = smfont.render("Salvage", True, BRIGHT_GREEN)
     choose_rect = choose.get_rect()
     toprect = topbar.get_rect()
-    card_choices = assets.get_cards(3, class_cards=True, neutral_cards=True)
     salvage_box = pygame.Rect((0, 0, SCREEN_WIDTH * (3 / 4), SCREEN_HEIGHT * (3 / 4)))
     salvage_box.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     toprect.centerx = salvage_box.centerx
     toprect.y = salvage_box.y
+    # move cards slightly above center
     for card in card_choices:
         card.rect.center = salvage_box.center
         card.rect.move_ip(0, -50)
+        print(card.name)
+    # move one card left and one card right of the middle card
     card_choices[0].rect.x -= CARD_WIDTH + 50
     card_choices[2].rect.x += CARD_WIDTH + 50
+    # Place buttons below cards displayed
     skip_rect.midtop = card_choices[0].rect.midbottom
     choose_rect.midtop = card_choices[2].rect.midbottom
     skip_rect.y += 50
@@ -84,21 +100,23 @@ def targeting(screen, board, card, player, enemy_group):
     targeted = False
     ret = False
     card_area = player.hand.get_area()
+
     while pygame.mouse.get_pressed()[0]:
         pygame.time.Clock().tick(40)
         board.draw(screen)
-        #board._show_boxes(screen)
         player.hand.draw(screen)
         player.draw(screen)
         enemy_group.draw(screen)
-        #enemy_group.draw_rect(screen)
-        #player.show_box(screen)
         position = pygame.mouse.get_pos()
         target.update(position)
-        #ygame.draw.rect(screen, WHITE, card_area, 1)
+        # Debugging rectangle hitboxes
+        board._show_boxes(screen)
+        enemy_group.draw_rect(screen)
+        player.show_box(screen)
+
         if card.ctype == 'TARGET_ATTACK':
             # changes targeting recticle if a sucessful
-            # collisoin with the enemy is detected
+            # collision with the enemy is detected
             if any([sp.collision(position) for sp in enemy_group]):
                 screen.blit(target.get_atk(), position)
             else:
@@ -110,7 +128,7 @@ def targeting(screen, board, card, player, enemy_group):
                 screen.blit(target.get_bst(), position)
             else:
                 screen.blit(target.get_img(), position)
-
+        target.show_box(screen)
         pygame.event.pump()
         pygame.display.update()
     if card.ctype == 'TARGET_ATTACK':
@@ -130,6 +148,8 @@ def battle(screen, player, assets):
     board = GameBoard("spacefield_a-000.png")
     enemy_group = EnemyFleet()
     player_turn = True
+    player.power = player.max_power
+    alwayson = False
     # change to dynamically create enemies
     enemy_group.spawn(assets.enemy_choices)
 
@@ -166,14 +186,17 @@ def battle(screen, player, assets):
                         player_turn = False
                     else:
                         for card in player.hand:
-                            if card.rect.collidepoint(mouse_pos):
+                            if card.cost <= player.power and card.rect.collidepoint(mouse_pos):
                                 card.highlight = True
                                 if targeting(screen, board, card, player, enemy_group):
                                     player.hand.position_hand()
+                                    player.power -= card.cost
                                 card.highlight = False
                                 break
-                #elif event.type == MOUSEMOTION:
-            board.highlight(screen, mouse_pos)
+            # if the player lacks the power to play any cards
+            # leave highlighting of end turn always on
+            alwayson = not player.hand or player.hand.mincost() > player.power
+            board.highlight(screen, mouse_pos, alwayson)
         else:
             # enemies take their turns attacking
             try:
@@ -185,6 +208,7 @@ def battle(screen, player, assets):
             except StopIteration:
                 player_turn = True
                 player.drain_shields()
+                player.power = player.max_power
 
         # update the display every iteration of this loop
         pygame.display.update()

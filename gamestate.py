@@ -21,7 +21,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 CARD_WIDTH = int(93 * 1.5)
 CARD_HEIGHT = int(130 * 1.5)
-
+TARGET_SIZE = (36, 36)
 # PATHS
 ASSETS_PATH = os.path.join(os.getcwd(), 'assets')
 SHIPS_PATH = os.path.join(ASSETS_PATH, "Spaceships", "spaceships", "parts_spriter_animation")

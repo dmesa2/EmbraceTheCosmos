@@ -139,9 +139,13 @@ class Character(sprite.Sprite):
         self.shield = 0
 
 class Player(Character):
-    def __init__(self, img_path=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'), health=40):
+    def __init__(self,
+                img_path=os.path.join(ASSETS_PATH, SHIPS_PATH, 'Ship3/Ship3.png'),
+                health=40, power=3, hand=3):
         super().__init__(img_path=img_path, max_health=health)
-        self.max_handsize = 3
+        self.max_handsize = hand
+        self.max_power = power
+        self.power = 0
         self.all_cards = []
         self.ctype = 'fighter'
         # battle hands
@@ -207,9 +211,9 @@ class Enemy(Character):
 class Target(sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("assets/Misc/red_target.png"), (24, 24))
-        self.attack_img = pygame.transform.scale(pygame.image.load("assets/Misc/green_target.png"), (24, 24))
-        self.boost_img = pygame.transform.scale(pygame.image.load("assets/Misc/blue_target.png"), (24, 24))
+        self.image = pygame.transform.scale(pygame.image.load("assets/Misc/red_target.png"), TARGET_SIZE)
+        self.attack_img = pygame.transform.scale(pygame.image.load("assets/Misc/green_target.png"), TARGET_SIZE)
+        self.boost_img = pygame.transform.scale(pygame.image.load("assets/Misc/blue_target.png"), TARGET_SIZE)
         self.rect = self.image.get_rect()
 
     def update(self, position):

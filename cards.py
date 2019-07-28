@@ -43,6 +43,8 @@ class Hand(pygame.sprite.Group):
         offset_y = SCREEN_HEIGHT * 0.1
         return pygame.Rect((left - offset_x, top - offset_y, width + 2 * offset_x, CARD_HEIGHT + CARD_HEIGHT + offset_y ))
 
+    def mincost(self):
+        return min(self.sprites(), key=lambda sp : sp.cost).cost
 
 
 class Card(pygame.sprite.Sprite):

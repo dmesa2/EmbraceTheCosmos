@@ -46,8 +46,8 @@ class GameBoard:
         self.graveyard._draw_box(screen)
         self.deck._draw_box(screen)
 
-    def highlight(self, screen, position):
-        if self.end_turn.rect.collidepoint(position):
+    def highlight(self, screen, position, alwayson):
+        if alwayson or self.end_turn.rect.collidepoint(position):
             self.end_turn.draw(screen, True)
         elif self.deck.rect.collidepoint(position):
             self.deck.draw(screen, True)
