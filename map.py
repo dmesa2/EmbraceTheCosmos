@@ -4,6 +4,7 @@ from pygame.locals import *
 from gamestate import *
 from battle import battle
 from repair import repair
+import sys
 
 class MapIcons(pygame.sprite.Group):
     def __init__(self):
