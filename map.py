@@ -5,7 +5,7 @@ from gamestate import *
 from battle import battle
 from repair import repair
 import sys
-
+from shop import shop
 class MapIcons(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
@@ -104,5 +104,6 @@ class Map:
                             battle(screen, player, assets)
                         elif sp.type == 'unknown':
                             repair(screen, player, assets)
-
+                        elif sp.type == 'shop':
+                            shop(screen, player, assets)
             pygame.display.update()

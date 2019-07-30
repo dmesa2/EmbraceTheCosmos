@@ -6,12 +6,12 @@ import character
 import cards
 import sys
 
-def shop(screen, player, asset):
+def shop(screen, player, assets):
     ncards = 6
     pygame.font.init()
     large = pygame.font.Font(None, 64)
     small = pygame.font.Font(None, 16)
-    money = pygame.transform.scale(asset.coin, (16, 16))
+    money = pygame.transform.scale(assets.coin, (16, 16))
     black_market = large.render("Hober's Black Market", False, WHITE)
     bm_rect = black_market.get_rect(midtop=(SCREEN_WIDTH / 2, 0))
     bg = pygame.image.load(os.path.join(BACKGROUND_PATH, 'nebula', 'nebula06.png'))

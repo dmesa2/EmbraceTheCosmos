@@ -5,7 +5,8 @@
         "image_path" : "Ship1/Ship1.png",
         "max_health" : 30,
         "shield" : 0,
-        "attack_pattern" : ["beam"]
+        "attack_pattern" : ["beam"],
+        "credits" : 30
     },
     {
         "name" : "zap",
@@ -14,7 +15,8 @@
         "max_health" : 35,
         "shield" : 0,
         "attack_pattern" : ["mini shield", "sleep", "heavy beam",
-          "beam", "beam"]
+          "beam", "beam"],
+        "credits" : 55
     },
     {
         "name" : "bumble",
@@ -22,7 +24,8 @@
         "image_path" : "Ship5/Ship5.png",
         "max_health" : 20,
         "shield" : 0,
-        "attack_pattern" : ["beam", "heavy beam"]
+        "attack_pattern" : ["beam", "heavy beam"],
+        "credits" : 45
     },
     {
         "name" : "orange",
@@ -31,6 +34,7 @@
         "max_health" : 10,
         "shield" : 0,
         "attack_pattern" : ["mini shield", "mini shield",
-          "mini shield", "mini shield", "heavy beam"]
+          "mini shield", "mini shield", "heavy beam"],
+        "credits" : 20
     }
 ]
