@@ -9,8 +9,9 @@ from character import *
 from gamestate import *
 from map import *
 from gameassets import GameAssets
+from instructions import Instructions
 
-def main_menu(screen, myfont, player, map_call, assets):
+def main_menu(screen, myfont, player, map_call, instructions_call, assets):
     text = myfont.render("Play", True, BLACK)
     text2 = myfont.render("Help", True, BLACK)
     text3 = myfont.render("Quit", True, BLACK)
@@ -22,7 +23,7 @@ def main_menu(screen, myfont, player, map_call, assets):
         screen.blit(menu, (0, 0))
         screen.blit(menu_image,(5,50))
 
-        buttons(screen, text, text2, text3, player, map_call, assets)
+        buttons(screen, text, text2, text3, player, map_call, instructions_call, assets)
 
         #print(mouse)
         for event in pygame.event.get():
@@ -34,7 +35,7 @@ def main_menu(screen, myfont, player, map_call, assets):
 
 # For the button function, I used sentdex tutorials from youtube.com
 # as a reference
-def buttons(screen, text, text2, text3, player, map_call, assets):
+def buttons(screen, text, text2, text3, player, map_call, instructions_call, assets):
     pygame.draw.rect(screen, GRAY,(340,250,170,50))
     pygame.draw.rect(screen, GRAY,(340,350,170,50))
     pygame.draw.rect(screen, GRAY,(340,450,170,50))
@@ -51,6 +52,8 @@ def buttons(screen, text, text2, text3, player, map_call, assets):
 
     if 340+170 > mouse[0] > 340 and 350+50 > mouse[1] > 350:
          pygame.draw.rect(screen, BRIGHT_GRAY,(340,350,170,50))
+         if click[0] == 1:
+             instructions_call.instructions_menu(screen)
     else:
         pygame.draw.rect(screen, GRAY,(340,350,170,50))
 
@@ -90,6 +93,7 @@ if __name__=='__main__':
     for _ in range(2):
         player.all_cards.append(assets.all_cards['fighter'][0].copy())
     map_call = Map()
+    instructions_call = Instructions()
 
 
-    main_menu(screen, myfont, player, map_call, assets)
+    main_menu(screen, myfont, player, map_call, instructions_call, assets)
