@@ -14,6 +14,7 @@ class Instructions:
     myfont = pygame.font.Font('freesansbold.ttf', 32)
     text3 = myfont.render("Back", True, BLACK)
     while True:
+      pygame.time.Clock().tick(40)
       mouse = pygame.mouse.get_pos()
       click = pygame.mouse.get_pressed()
 
@@ -35,11 +36,12 @@ class Instructions:
   def instructions_menu(self, screen):
       ret = True
       while ret:
+        pygame.time.Clock().tick(40)
         screen.blit(self.bg, (0, 0))
-        ret = self.buttons(screen)
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
                 break
             pygame.display.update()
+        ret = self.buttons(screen)

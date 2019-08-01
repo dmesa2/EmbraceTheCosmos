@@ -20,6 +20,7 @@ def main_menu(screen, myfont, player, map_call, instructions_call, assets):
     pygame.mixer.music.play(-1)
 
     while True:
+        pygame.time.Clock().tick(40)
         screen.blit(menu, (0, 0))
         screen.blit(menu_image,(5,50))
 

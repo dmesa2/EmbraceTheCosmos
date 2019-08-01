@@ -53,7 +53,7 @@ class EnemyFleet(sprite.Group):
 
 class Character(sprite.Sprite):
     def __init__(self, img_path=None, image=None, explosion_path=None,
-                explosions=None, max_health=40):
+                explosions=None, max_health=40, credits=0):
         super().__init__()
         if img_path:
             self.image = pygame.image.load(img_path)
@@ -74,7 +74,7 @@ class Character(sprite.Sprite):
         self.max_health = max_health
         self.current_health = max_health
         self.shield = 0
-
+        self.credits = credits
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
@@ -210,8 +210,8 @@ class Player(Character):
         return False
 
 class Enemy(Character):
-    def __init__(self, image, health, shield, atk_pattern, explosion_path=None, explosions=None):
-        super().__init__(image=image, max_health=health, explosion_path=explosion_path, explosions=explosions)
+    def __init__(self, image, health, shield, credits, atk_pattern, explosion_path=None, explosions=None):
+        super().__init__(image=image, credits=credits, max_health=health, explosion_path=explosion_path, explosions=explosions)
         self.shield = shield
         self.attacks = atk_pattern
         self.attack_idx = 0
