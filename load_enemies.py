@@ -15,7 +15,7 @@ class EnemyChoice:
     def read_enemy(self, sp):
         img = pygame.image.load(os.path.join(ASSETS_PATH, SHIPS_PATH, sp['image_path']))
         return character.Enemy(img, sp['max_health'],
-            sp['shield'], sp['attack_pattern'], sp['model'])
+            sp['shield'], sp['credits'], sp['attack_pattern'], sp['model'])
 
     def load_enemies(self, fname):
         '''

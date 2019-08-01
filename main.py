@@ -32,7 +32,7 @@ def main_menu(screen, myfont, player, map_call, instructions_call, assets):
                 pygame.quit()
                 sys.exit()
                 break
-            pygame.display.update()
+        pygame.display.update()
 
 # For the button function, I used sentdex tutorials from youtube.com
 # as a reference
