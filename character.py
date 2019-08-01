@@ -75,6 +75,7 @@ class Character(sprite.Sprite):
         self.current_health = max_health
         self.shield = 0
         self.credits = credits
+
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
@@ -231,7 +232,7 @@ class Enemy(Character):
 
 
     def copy(self):
-        return Enemy(self.image, self.max_health, self.shield, self.attacks, explosions=self.explosions)
+        return Enemy(self.image, self.max_health, self.shield, self.credits, self.attacks, explosions=self.explosions)
 
 class Target(sprite.Sprite):
     def __init__(self):
