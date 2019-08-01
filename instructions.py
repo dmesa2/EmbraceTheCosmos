@@ -11,27 +11,32 @@ class Instructions:
 
 
   def buttons(self,screen):
-
     myfont = pygame.font.Font('freesansbold.ttf', 32)
-    pygame.draw.rect(screen, GRAY,(310,530,170,50))
     text3 = myfont.render("Back", True, BLACK)
-    mouse = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
+    while True:
+      mouse = pygame.mouse.get_pos()
+      click = pygame.mouse.get_pressed()
 
-    if 310+170 > mouse[0] > 310 and 530+50 > mouse[1] > 530:
-        pygame.draw.rect(screen, BRIGHT_GRAY,(310,530,170,50))
-        if click[0] == 1:
-            #pygame.quit()
-            sys.exit()
-    else:
-        pygame.draw.rect(screen, GRAY,(310,530,170,50))
+      if 310+170 > mouse[0] > 310 and 530+50 > mouse[1] > 530:
+          pygame.draw.rect(screen, GRAY,(310,530,170,50))
+          pygame.draw.rect(screen, BRIGHT_GRAY,(310,530,170,50))
+          if click[0] == 1:
+              #pygame.quit()
+              #sys.exit()
+              return False
+      else:
+          pygame.draw.rect(screen, GRAY,(310,530,170,50))
 
-    screen.blit(text3, (355,540))
+      screen.blit(text3, (355,540))
+      pygame.display.update()
+      pygame.event.pump()
+    return True
 
   def instructions_menu(self, screen):
-      while True:
+      ret = True
+      while ret:
         screen.blit(self.bg, (0, 0))
-        self.buttons(screen)
+        ret = self.buttons(screen)
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
