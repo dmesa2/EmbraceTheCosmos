@@ -5,10 +5,14 @@ import gameassets
 import character
 import cards
 import sys
+import os
 
 def shop(screen, player, assets):
     ncards = 6
     pygame.font.init()
+    # Set up icons/fonts to be drawn
+    done = pygame.image.load(os.path.join(ICON_PATH, 'button_done-shopping.png'))
+    done_rect = done.get_rect(bottomright=(SCREEN_WIDTH, SCREEN_HEIGHT))
     large = pygame.font.Font(None, 64)
     small = pygame.font.Font(None, 16)
     money = pygame.transform.scale(assets.coin, (16, 16))
@@ -16,9 +20,13 @@ def shop(screen, player, assets):
     bm_rect = black_market.get_rect(midtop=(SCREEN_WIDTH / 2, 0))
     bg = pygame.image.load(os.path.join(BACKGROUND_PATH, 'nebula', 'nebula06.png'))
     bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    # Get cards to offer player and add to for_sale group
     sale_cards = assets.get_cards(ncards, True, True)
     for_sale = cards.Hand()
     for_sale.add(*sale_cards)
+
+    # set up positions for cards
     lvl_1 = black_market.get_height() * 1.5
     lvl_2 = lvl_1 + CARD_HEIGHT  + 1 / 8 * CARD_HEIGHT
     px = 1 / 2 * CARD_WIDTH
@@ -28,13 +36,16 @@ def shop(screen, player, assets):
         positions.append((px, lvl_1))
         positions.append((px, lvl_2))
         px += x_delta
+
+    # update each card with its display position
     for card, pos in zip(for_sale.sprites(), positions):
-        print(card.name, pos)
         card.pos = list(pos)
     for_sale.update()
+
     while True:
         pygame.time.Clock().tick(40)
         screen.blit(bg, (0, 0))
+        screen.blit(done, done_rect)
         screen.blit(black_market, bm_rect)
         #for_sale.draw(screen)
         for card in for_sale.sprites():
@@ -45,6 +56,10 @@ def shop(screen, player, assets):
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if done_rect.collidepoint(pos):
+                    return
 
 
 if __name__=="__main__":
