@@ -9,6 +9,7 @@ BLACK = (0,0,0)
 GRAY = (128,128,128)
 CYAN = (100, 150, 245)
 YELLOW = (214, 224, 20)
+ORCHIRD = (104,34,139)
 
 BRIGHT_WHITE = (255,255,255)
 BRIGHT_GREEN = (0, 255, 0)
@@ -24,6 +25,10 @@ CARD_HEIGHT = 195
 TARGET_SIZE = (36, 36)
 ICON_SIZE = 48
 
+MOUSE_ONE = 0
+MOUSE_TWO = 1
+
+MAP_DELTA = 15
 # PATHS
 ASSETS_PATH = os.path.join(os.getcwd(), 'assets')
 SHIPS_PATH = os.path.join(ASSETS_PATH, "Spaceships", "spaceships", "parts_spriter_animation")
