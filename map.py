@@ -12,6 +12,28 @@ from shop import shop
 
 LAST = -1
 FIRST = 1
+# Rest, Shop, Unknown, Minion
+REPAIR = 0
+SHOP = 1
+UNKNOWN = 2
+MINION = 3
+
+def choose_selection(node, node_counts, images, first_two):
+    choices = [REPAIR, SHOP, UNKNOWN, MINION]
+    choice_str = ['repair', 'shop', 'unknown', 'minion']
+    added = False
+    while not added:
+        if first_two < 2:
+            choice = random.choice(choices[2:])
+        else:
+            choice = random.choice(choices)
+
+        if node_counts[choice] > 0:
+            node_counts[choice] -= 1
+            added = True
+    node.image, node.lg_image = images[choice_str[choice]]
+    node.type = choice_str[choice]
+    node.update()
 
 def get_rand():
     nums = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3]
@@ -63,6 +85,9 @@ class Icon(pygame.sprite.Sprite):
         self.lg_rect = self.lg_image.get_rect(center=(self.x, self.y))
         self.bounding_rect = self.image.get_bounding_rect()
         self.bounding_rect.center = self.rect.center
+
+    def is_child(self, parent):
+        return self in parent.children
 
 class IconTree(pygame.sprite.Group):
     def __init__(self, images):
@@ -116,8 +141,10 @@ class IconTree(pygame.sprite.Group):
             if not empty_nodes:
                 self.levels.append(new_level)
                 last_level = new_level
-        # place images
-        # Add final rest nodes
+        '''
+        Add final repair nodes.
+        Before the boss players will have the option to repair.
+        '''
         rest = []
         rest_nodes = min(4, len(self.levels[LAST]))
         last = 0
@@ -133,11 +160,26 @@ class IconTree(pygame.sprite.Group):
         for parent in self.levels[LAST][i * nodes_per_rest:]:
             parent.children.append(temp)
         self.levels.append(rest)
-        # Add boss node
+        ''' Add final boss node. '''
         boss = Icon(*images['boss'])
         for parent in self.levels[LAST]:
             parent.children.append(boss)
         self.levels.append([boss])
+        '''
+        Generate actual icons at each node positoin in each map
+        Rest, Shop, Unknown, Minion
+        '''
+        node_counts =[int(total_encounters * .15),
+                      int(total_encounters * .15),
+                      int(total_encounters * 0.30),
+                      total_encounters]
+        # Skip 1st level (hidden root)
+        # Skip last two levels (rest / boss levels)
+        first_two = 0
+        for nodes in self.levels[1:-2]:
+            for node in nodes:
+                choose_selection(node, node_counts, images, first_two)
+            first_two += 1
         # Add all newly created nodes to the group
         for l in self.levels:
             self.add(*l)
@@ -245,6 +287,7 @@ class Map:
   def main_map(self, screen, player, assets):
       sector_map = IconTree(self.images)
       sector_map.update()
+      player_loc = sector_map.root
       while True:
         pygame.time.Clock().tick(40)
         screen.blit(self.bg, (0, 0))
@@ -262,10 +305,11 @@ class Map:
                 if self.up_rect.collidepoint(position) or self.down_rect.collidepoint(position):
                     sector_map.scroll(screen, self.bg, self.legend, self.up, self.down, self.up_rect, self.down_rect)
                 for sp in sector_map.sprites():
-                    if sp.collide(position):
-                        if sp.type == 'minion':
+                    if sp.is_child(player_loc) and sp.collide(position):
+                        player_loc = sp
+                        if sp.type == 'minion' or sp.type == 'unknown' or sp.type == 'boss':
                             battle(screen, player, assets)
-                        elif sp.type == 'unknown':
+                        elif sp.type == 'repair':
                             repair(screen, player, assets)
                         elif sp.type == 'shop':
                             shop(screen, player, assets)
