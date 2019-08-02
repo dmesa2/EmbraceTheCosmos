@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 import sys
+import math
 
 from pygame.locals import *
 from gamestate import *
@@ -64,39 +65,84 @@ class Icon(pygame.sprite.Sprite):
         self.bounding_rect.center = self.rect.center
 
 class IconTree(pygame.sprite.Group):
-    def __init__(self):
+    def __init__(self, images):
         super().__init__()
+        # placeholder surface until actual images are filled in
         image = pygame.surface.Surface((1, 1))
         total_encounters = 40
+        # start with 3-5 nodes for the player to start at
         starting_nodes = random.randint(3, 5)
         last_level = [Icon(image, image) for i in range(1, starting_nodes + 1)]
         n_nodes = starting_nodes
         self.root = Icon(image, image)
         self.root.children = last_level.copy()
+        # holds node list for each level of the tree
         self.levels = [[self.root], last_level]
+
         while n_nodes < total_encounters:
-            empty_nodes = []
-            new_level = []
+            empty_nodes = [] # nodes that have no children
+            new_level = [] # nodes that are being newly added
             for node in last_level:
                 new_nodes = get_rand()
                 n_nodes += new_nodes
                 if new_nodes == 0:
+                    '''
+                    If the parent is to generate no children
+                    either connect it to the left most node (last generated)
+                    or if no nodes at this level have been created add it
+                    to empty_nodes list to be connected once a node is generated
+                    '''
                     if not new_level:
                         empty_nodes.append(node)
                     else:
                         node.children.append(new_level[-1])
                 else:
+                    '''
+                    Generate n new children for the parent node.
+                    Connect any nodes in empty list to the first node generated
+                    '''
                     for _ in range(new_nodes):
                         temp = Icon(image, image)
                         new_level.append(temp)
                         while empty_nodes:
                             empty_nodes.pop().children.append(temp)
                         node.children.append(temp)
+            '''
+            If the empty_nodes list is not empty then we generated no new
+            nodes this round, start over on the same level.
+            Otherwise make the newly generated children the new parents
+            and move onto creating the next level.
+            '''
             if not empty_nodes:
                 self.levels.append(new_level)
                 last_level = new_level
+        # place images
+        # Add final rest nodes
+        rest = []
+        rest_nodes = min(4, len(self.levels[LAST]))
+        last = 0
+        if rest_nodes == len(self.levels[LAST]):
+            nodes_per_rest = 1
+        else:
+            nodes_per_rest = len(self.levels[LAST]) // rest_nodes
+        for i in range(rest_nodes):
+            temp = Icon(*images['repair'])
+            rest.append(temp)
+            for parent in self.levels[LAST][i * nodes_per_rest : (i + 1) * nodes_per_rest]:
+                parent.children.append(temp)
+        for parent in self.levels[LAST][i * nodes_per_rest:]:
+            parent.children.append(temp)
+        self.levels.append(rest)
+        # Add boss node
+        boss = Icon(*images['boss'])
+        for parent in self.levels[LAST]:
+            parent.children.append(boss)
+        self.levels.append([boss])
+        # Add all newly created nodes to the group
         for l in self.levels:
             self.add(*l)
+        # generate positions for each node based on the number of nodes per level
+        self.position()
 
     def draw(self, screen):
         position = pygame.mouse.get_pos()
@@ -104,16 +150,19 @@ class IconTree(pygame.sprite.Group):
             if icon != self.root:
                 icon.draw(screen, icon.collide(position))
 
-    def position(self, width, height):
+    def position(self):
+        '''
+        Establishes positions of procedurally generated map icons.
+        Only needs to be called directly after new map initialization.
+        '''
         delta_y = 150
-        y_coord = height - 60
-
+        y_coord = SCREEN_HEIGHT - 60
         # establish positions of current level, skip root level
         for current in self.levels[1:]:
             n = len(current)
-            field = int(width * .9)
+            field = int(SCREEN_WIDTH * .9)
             delta_x = (field - n * 40) / (n  + 1)
-            x_coord = delta_x + int(width *.1)
+            x_coord = delta_x + int(SCREEN_WIDTH *.1)
             for n in current:
                 n.x = x_coord
                 n.y = y_coord
@@ -122,6 +171,10 @@ class IconTree(pygame.sprite.Group):
         self.update()
 
     def scroll(self, screen, bg, legend, up, down, up_rect, down_rect):
+        '''
+        Enables scrolling of map with arrow icons at bottom right hand side.
+        Will stop when the last row of icons display is going off the screen.
+        '''
         while pygame.mouse.get_pressed()[MOUSE_ONE]:
             pygame.time.Clock().tick(40)
             screen.blit(bg, (0, 0))
@@ -175,6 +228,10 @@ class Map:
      unk = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-small.png'), (40, 40))
      unk_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty.png'), (50, 50))
      self.images['unknown'] = (unk, unk_lg)
+     # Repair
+     rep_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/auto-repair.png'), (50, 50))
+     rep = pygame.transform.scale(rep_lg, (40, 40))
+     self.images['repair'] = (rep, rep_lg)
      # Background
      self.bg = pygame.transform.scale(pygame.image.load(os.path.join(BACKGROUND_PATH, "nebula/nebula09.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
      #Legend
@@ -186,11 +243,7 @@ class Map:
      self.up_rect = self.up.get_rect(topright=self.down_rect.topleft)
 
   def main_map(self, screen, player, assets):
-      sector_map = IconTree()
-      for sp in sector_map.sprites():
-          sp.image, sp.lg_image = self.images['minion']
-      sector_map.update()
-      sector_map.position(SCREEN_WIDTH, SCREEN_HEIGHT)
+      sector_map = IconTree(self.images)
       sector_map.update()
       while True:
         pygame.time.Clock().tick(40)
