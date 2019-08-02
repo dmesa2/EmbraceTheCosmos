@@ -53,7 +53,7 @@ class Card(pygame.sprite.Sprite):
         if image_path:
             pth = os.path.join(CARD_PATH, image_path)
             self.image_path = image_path
-            self.image = pygame.transform.scale(pygame.image.load(pth), (CARD_WIDTH, CARD_HEIGHT))
+            self.image = pygame.transform.scale(pygame.image.load(pth).convert(), (CARD_WIDTH, CARD_HEIGHT))
         else:
             self.image = image
         self.id = 0

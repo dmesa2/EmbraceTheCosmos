@@ -6,6 +6,17 @@ from battle import battle
 from repair import repair
 import sys
 from shop import shop
+
+class Tree(pygame.sprites.Group):
+    def __init__(self, start):
+        super().__init__()
+        self.edges = set()
+        self.position = start
+
+    def reposition(self, node):
+        self.position = node
+        self.update()
+
 class MapIcons(pygame.sprite.Group):
     def __init__(self):
         super().__init__()

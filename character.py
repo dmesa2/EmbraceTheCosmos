@@ -144,13 +144,13 @@ class Character(sprite.Sprite):
         else:
             self.current_health -= ndmg
         self.current_health = max(0, self.current_health)
-        
+
     def drain_shields(self):
         self.shield = 0
 
     def explode(self, screen, board, player, enemy_group):
-        player.hand.draw(screen)
         board.draw(screen, player.power, player.max_power)
+        player.hand.draw(screen)
         player.draw(screen)
         enemy_group.draw(screen)
         if self in enemy_group:
