@@ -89,7 +89,7 @@ def salvage(screen, board, player, assets):
         choices.draw(screen)
         pygame.display.update()
 
-def targeting(screen, board, card, player, enemy_group):
+def targeting(screen, board, card, player, enemy_fleet):
     '''
     Function called when a card is selected by the player
     Sucessful targeting means the card is used
@@ -106,18 +106,18 @@ def targeting(screen, board, card, player, enemy_group):
         board.draw(screen, player.power, player.max_power)
         player.hand.draw(screen)
         player.draw(screen)
-        enemy_group.draw(screen)
+        enemy_fleet.draw(screen)
         position = pygame.mouse.get_pos()
         target.update(position)
         # Debugging rectangle hitboxes
         #board._show_boxes(screen)
-        #enemy_group.draw_rect(screen)
+        #enemy_fleet.draw_rect(screen)
         #player.show_box(screen)
 
         if card.ctype == 'TARGET_ATTACK':
             # changes targeting recticle if a sucessful
             # collision with the enemy is detected
-            if any([sp.collision(position) for sp in enemy_group]):
+            if any([sp.collision(position) for sp in enemy_fleet]):
                 screen.blit(target.get_atk(), position)
             else:
                 screen.blit(target.get_img(), position)
@@ -131,13 +131,13 @@ def targeting(screen, board, card, player, enemy_group):
         pygame.event.pump()
         pygame.display.update()
     if card.ctype == 'TARGET_ATTACK':
-        targeted = [sp for sp in enemy_group if sp.collision(position)]
+        targeted = [sp for sp in enemy_fleet if sp.collision(position)]
         if targeted:
-            card.process_card(player, enemy_group)
+            card.process_card(player, enemy_fleet)
             ret = True
     else:
         if not card_area.collidepoint(position):
-            card.process_card(player, enemy_group)
+            card.process_card(player, enemy_fleet)
             ret = True
     pygame.mouse.set_visible(True)
     return ret
@@ -146,17 +146,17 @@ def battle(screen, player, assets):
     pygame.font.init()
     player.move(0, SCREEN_HEIGHT / 3)
     board = GameBoard("spacefield_a-000.png")
-    enemy_group = EnemyFleet()
+    enemy_fleet = EnemyFleet()
     player_turn = True
     player.power = player.max_power
     alwayson = False
     enemy = iter(())
     # change to dynamically create enemies
-    enemy_group.spawn(assets.enemy_choices)
+    enemy_fleet.spawn(assets.enemy_choices)
 
-    for enemy in enemy_group:
+    for enemy in enemy_fleet:
         enemy.flip()
-    enemy_group.update()
+    enemy_fleet.update()
     player.update()
     player.reset_decks()
     player.draw_hand()
@@ -164,7 +164,9 @@ def battle(screen, player, assets):
     player.hand.position_hand()
     # change to draw function
     pygame.mouse.set_visible(True)
-    while enemy_group:
+
+    loot = 0
+    while enemy_fleet:
         pygame.time.Clock().tick(40)
         # draw background
         board.draw(screen, player.power, player.max_power)
@@ -172,7 +174,7 @@ def battle(screen, player, assets):
         player.hand.ddraw(screen, pygame.mouse.get_pos(), player.power)
         # place the player object (the loaded image)
         player.draw(screen)
-        enemy_group.draw(screen)
+        enemy_fleet.draw(screen)
         if player_turn:
             mouse_pos = pygame.mouse.get_pos()
             for event in pygame.event.get():
@@ -180,41 +182,47 @@ def battle(screen, player, assets):
                     pygame.quit()
                     sys.exit()
                 elif event.type == MOUSEBUTTONDOWN:
+                    # End players turn
                     if board.end_turn.collision(mouse_pos):
                         player.end_turn(board)
-                        enemy = (e for e in enemy_group.sprites())
-                        enemy_group.drain_shields()
+                        enemy = (e for e in enemy_fleet.sprites())
+                        enemy_fleet.drain_shields()
                         player_turn = False
                     else:
+                        # Check for card collisions for highlighting/selection
                         for card in player.hand:
                             if card.cost <= player.power and card.rect.collidepoint(mouse_pos):
                                 card.highlight = True
-                                if targeting(screen, board, card, player, enemy_group):
+                                if targeting(screen, board, card, player, enemy_fleet):
                                     player.hand.position_hand()
-                                    enemy_group.dead(screen, board, player, enemy_group)
                                     player.power -= card.cost
+                                    loot = enemy_fleet.dead(screen, board, player, enemy_fleet)
                                 card.highlight = False
                                 break
             # if the player lacks the power to play any cards
-            # leave highlighting of end turn always on
+            # leave highlighting of end turn button always on
             alwayson = not player.hand or player.hand.mincost() > player.power
             board.highlight(screen, mouse_pos, alwayson)
         else:
             # enemies take their turns attacking
             try:
-                cur = next(enemy)
-                cur.attack(player, assets)
+                current = next(enemy)
+                current.attack(player, assets)
                 pygame.time.wait(200)
-                if player.dead(screen, board, player, enemy_group):
+                if player.dead(screen, board, player, enemy_fleet):
                     return False
             except StopIteration:
+                # All enemeies have taken their turn, start players turn
                 player_turn = True
                 player.drain_shields()
                 player.power = player.max_power
 
         # update the display every iteration of this loop
         pygame.display.update()
+    player.credits += loot
     salvage(screen, board, player, assets)
+    player.drain_shields()
+    print(player.credits)
     return True
 
 if __name__ == "__main__":

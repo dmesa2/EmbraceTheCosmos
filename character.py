@@ -29,8 +29,10 @@ class EnemyFleet(sprite.Group):
                 sp.damage(card.damage)
 
     def dead(self, screen, board, player, enemy_group):
+        loot = 0
         for sp in self.sprites():
-            sp.dead(screen, board, player, enemy_group)
+            loot = sp.dead(screen, board, player, enemy_group)
+        return loot
 
     def spawn(self, ec):
         group = random.choice(ec.groupings)
@@ -53,7 +55,7 @@ class EnemyFleet(sprite.Group):
 
 class Character(sprite.Sprite):
     def __init__(self, img_path=None, image=None, explosion_path=None,
-                explosions=None, max_health=40, credits=0):
+                explosions=None, max_health=40, credits=100):
         super().__init__()
         if img_path:
             self.image = pygame.image.load(img_path)
@@ -220,7 +222,8 @@ class Enemy(Character):
     def dead(self, screen, board, player, enemy_group):
         if self.current_health <= 0:
             self.explode(screen, board, player, enemy_group)
-
+            return self.credits
+        return 0
 
     def attack(self, player, assets):
         card = assets.enemy_cards[self.attacks[self.attack_idx]]

@@ -9,6 +9,7 @@ from gamestate import *
 from battle import battle
 from repair import repair
 from shop import shop
+from gameover import game_over
 
 LAST = -1
 FIRST = 1
@@ -288,7 +289,8 @@ class Map:
       sector_map = IconTree(self.images)
       sector_map.update()
       player_loc = sector_map.root
-      while True:
+      alive = True
+      while alive:
         pygame.time.Clock().tick(40)
         screen.blit(self.bg, (0, 0))
         screen.blit(self.legend, (580, 20))
@@ -308,12 +310,14 @@ class Map:
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
                         if sp.type == 'minion' or sp.type == 'unknown' or sp.type == 'boss':
-                            battle(screen, player, assets)
+                            alive = battle(screen, player, assets)
                         elif sp.type == 'repair':
                             repair(screen, player, assets)
                         elif sp.type == 'shop':
                             shop(screen, player, assets)
-
-            sector_map.connect(screen)
-            sector_map.draw(screen)
-            pygame.display.update()
+            if alive:
+                sector_map.connect(screen)
+                sector_map.draw(screen)
+                pygame.display.update()
+        if player.current_health <= 0:
+            game_over(screen)
