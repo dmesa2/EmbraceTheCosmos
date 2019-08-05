@@ -13,11 +13,6 @@ from gameover import game_over
 
 LAST = -1
 FIRST = 1
-# Rest, Shop, Unknown, Minion
-REPAIR = 0
-SHOP = 1
-UNKNOWN = 2
-MINION = 3
 
 ALPHA = 200
 
@@ -26,26 +21,9 @@ INACCESSIBLE = 0
 ACCESSIBLE = 1
 CURRENT_LOCATION = 2
 
-def choose_selection(node, node_counts, images, first_two):
-    choices = [REPAIR, SHOP, UNKNOWN, MINION]
-    choice_str = ['repair', 'shop', 'unknown', 'minion']
-    added = False
-    while not added:
-        if first_two < 2:
-            choice = random.choice(choices[2:])
-        else:
-            choice = random.choice(choices)
-
-        if node_counts[choice] > 0:
-            node_counts[choice] -= 1
-            added = True
-    node.image, node.shadow_image = images[choice_str[choice]]
-    node.type = choice_str[choice]
-    node.update()
-
 def get_rand():
     # Gets a random numbers from an uneven distrubution
-    nums = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3]
+    nums = [2, 2, 2, 3, 3, 3, 4, 4, 5, 6]
     return random.choice(nums)
 
 class Icon(pygame.sprite.Sprite):
@@ -63,11 +41,11 @@ class Icon(pygame.sprite.Sprite):
 
     def connect(self, screen):
         # draw connections between nodes
-        for child in self.children:
-            pygame.draw.line(screen, ORCHIRD, self.rect.midtop, child.rect.midbottom)
+        [pygame.draw.line(screen, ORCHIRD, self.rect.midtop, child.rect.midbottom) for child in self.children]
+
 
     def draw(self, screen, access=False):
-        if self.y < -100 or self.y > SCREEN_HEIGHT + 100:
+        if self.y < -50 or self.y > SCREEN_HEIGHT + 50:
             return
         if access:
             screen.blit(self.image, self.rect)
@@ -117,7 +95,7 @@ class IconTree(pygame.sprite.Group):
             Each node can have at most half of the previous nodes connecting to it.
             Only the last node connected
             '''
-            new_level = [Icon(image, image) for _ in range(random.randint(2, 6))]
+            new_level = [Icon(image, image) for _ in range(get_rand())] # random.randint(2, 6))]
             has_parent = [False for _ in range(len(new_level))]
             max_conn = math.ceil(len(last_level) / 2)
             start_idx = 0
@@ -168,17 +146,26 @@ class IconTree(pygame.sprite.Group):
         Rest, Shop, Unknown, Minion
         '''
         total_encounters = sum([len(lvl) for lvl in self.levels[1:-2]])
-        node_counts =[int(total_encounters * .15),
-                      int(total_encounters * .15),
-                      int(total_encounters * 0.30),
-                      int(total_encounters)]
-        # Skip 1st level (hidden root)
-        # Skip last two levels (repair / boss levels)
-        first_two = 0
-        for nodes in self.levels[1:-2]:
+        selections = ['unknown'] * int(total_encounters * 0.30) + \
+                     ['minion'] * int(total_encounters * 0.40)
+        random.shuffle(selections)
+        for nodes in self.levels[1:3]:
             for node in nodes:
-                choose_selection(node, node_counts, images, first_two)
-            first_two += 1
+                node.type = selections.pop()
+                node.image, node.shadow_image = images[node.type]
+                node.update()
+        selections += ['repair'] * int(total_encounters * .15) + \
+                      ['shop'] * int(total_encounters * .15)
+        rem_nodes = sum(len(lvl) for lvl in self.levels[3:-2])
+        while len(selections) < rem_nodes:
+            selections.append('minion')
+        random.shuffle(selections)
+        for nodes in self.levels[3:-2]:
+            for node in nodes:
+                node.type = selections.pop()
+                node.image, node.shadow_image = images[node.type]
+                node.update()
+
         # Add all newly created nodes to the group
         for l in self.levels:
             self.add(*l)

@@ -42,7 +42,6 @@ def salvage(screen, board, player, assets):
     for card in card_choices:
         card.rect.center = salvage_box.center
         card.rect.move_ip(0, -50)
-        print(card.name)
     # move one card left and one card right of the middle card
     card_choices[0].rect.x -= CARD_WIDTH + 50
     card_choices[2].rect.x += CARD_WIDTH + 50
@@ -223,7 +222,7 @@ def battle(screen, player, assets):
     player.credits += loot
     salvage(screen, board, player, assets)
     player.drain_shields()
-    print(player.credits)
+    print("current credits:", player.credits)
     return True
 
 if __name__ == "__main__":
