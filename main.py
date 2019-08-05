@@ -10,6 +10,7 @@ from gamestate import *
 from map import *
 from gameassets import GameAssets
 from instructions import Instructions
+from escape import Escape
 
 def new_player(assets):
     player = Player()
@@ -22,7 +23,7 @@ def new_player(assets):
         player.all_cards.append(assets.all_cards['fighter'][0].copy())
     return player
 
-def main_menu(screen, myfont, map_call, instructions_call, assets):
+def main_menu(screen, myfont, map_call, instructions_call, escape_call, assets):
     text = myfont.render("Play", True, BLACK)
     text2 = myfont.render("Help", True, BLACK)
     text3 = myfont.render("Quit", True, BLACK)
@@ -39,6 +40,10 @@ def main_menu(screen, myfont, map_call, instructions_call, assets):
 
         #print(mouse)
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    escape_call.escape_menu(screen)
+                    break
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -101,6 +106,7 @@ if __name__=='__main__':
     menu = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, "Background", "nebula01.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
     map_call = Map()
     instructions_call = Instructions()
+    escape_call = Escape()
 
 
-    main_menu(screen, myfont, map_call, instructions_call, assets)
+    main_menu(screen, myfont, map_call, instructions_call, escape_call, assets)
