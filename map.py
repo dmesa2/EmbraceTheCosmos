@@ -19,6 +19,13 @@ SHOP = 1
 UNKNOWN = 2
 MINION = 3
 
+ALPHA = 200
+
+# Access levels
+INACCESSIBLE = 0
+ACCESSIBLE = 1
+CURRENT_LOCATION = 2
+
 def choose_selection(node, node_counts, images, first_two):
     choices = [REPAIR, SHOP, UNKNOWN, MINION]
     choice_str = ['repair', 'shop', 'unknown', 'minion']
@@ -32,40 +39,41 @@ def choose_selection(node, node_counts, images, first_two):
         if node_counts[choice] > 0:
             node_counts[choice] -= 1
             added = True
-    node.image, node.lg_image = images[choice_str[choice]]
+    node.image, node.shadow_image = images[choice_str[choice]]
     node.type = choice_str[choice]
     node.update()
 
 def get_rand():
+    # Gets a random numbers from an uneven distrubution
     nums = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3]
     return random.choice(nums)
 
-def connect(screen, node):
-    if not node:
-        return
-    for child in node.children:
-        pygame.draw.line(screen, ORCHIRD, node.rect.midtop, child.rect.midbottom)
-        connect(screen, child)
-
 class Icon(pygame.sprite.Sprite):
-    def __init__(self, image, lg_image, type=None, x=0, y=0):
+    def __init__(self, image, shadow_image, type=None, x=0, y=0):
         super().__init__()
         self.x = x
         self.y = y
         self.type = type
         self.image = image
-        self.lg_image = lg_image
+        self.shadow_image = shadow_image
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
-        self.lg_rect = self.lg_image.get_rect(center=self.rect.center)
         self.bounding_rect = self.image.get_bounding_rect()
         self.bounding_rect.center = self.rect.center
         self.children = []
 
-    def draw(self, screen, large=False):
-        if large:
-            screen.blit(self.lg_image, self.rect)
+    def connect(self, screen):
+        # draw connections between nodes
+        for child in self.children:
+            pygame.draw.line(screen, ORCHIRD, self.rect.midtop, child.rect.midbottom)
+
+    def draw(self, screen, access=False):
+        if self.y < -100 or self.y > SCREEN_HEIGHT + 100:
+            return
+        if access:
+            screen.blit(self.image, self.rect)
         else:
-            screen.blit(self.image, self.lg_rect)
+            screen.blit(self.shadow_image, self.rect)
+        self.connect(screen)
 
     def up(self):
         self.y += MAP_DELTA
@@ -79,11 +87,10 @@ class Icon(pygame.sprite.Sprite):
         return self.bounding_rect.collidepoint(position)
 
     def copy(self):
-        return Icon(self.image, self.lg_image, self.type, self.x, self.y)
+        return Icon(self.image, self.shadow_image, self.type, self.x, self.y)
 
     def update(self):
         self.rect = self.image.get_rect(center=(self.x, self.y))
-        self.lg_rect = self.lg_image.get_rect(center=(self.x, self.y))
         self.bounding_rect = self.image.get_bounding_rect()
         self.bounding_rect.center = self.rect.center
 
@@ -95,72 +102,62 @@ class IconTree(pygame.sprite.Group):
         super().__init__()
         # placeholder surface until actual images are filled in
         image = pygame.surface.Surface((1, 1))
-        total_encounters = 40
         # start with 3-5 nodes for the player to start at
         starting_nodes = random.randint(3, 5)
         last_level = [Icon(image, image) for i in range(1, starting_nodes + 1)]
-        n_nodes = starting_nodes
         self.root = Icon(image, image)
-        self.root.children = last_level.copy()
+        self.root.children = last_level
         # holds node list for each level of the tree
         self.levels = [[self.root], last_level]
 
-        while n_nodes < total_encounters:
-            empty_nodes = [] # nodes that have no children
+        while len(self.levels) < 14:
             new_level = [] # nodes that are being newly added
-            for node in last_level:
-                new_nodes = get_rand()
-                n_nodes += new_nodes
-                if new_nodes == 0:
-                    '''
-                    If the parent is to generate no children
-                    either connect it to the left most node (last generated)
-                    or if no nodes at this level have been created add it
-                    to empty_nodes list to be connected once a node is generated
-                    '''
-                    if not new_level:
-                        empty_nodes.append(node)
-                    else:
-                        node.children.append(new_level[-1])
+            '''
+            Generate between 2 and 6 nodes for the next level
+            Each node can have at most half of the previous nodes connecting to it.
+            Only the last node connected
+            '''
+            new_level = [Icon(image, image) for _ in range(random.randint(2, 6))]
+            has_parent = [False for _ in range(len(new_level))]
+            max_conn = math.ceil(len(last_level) / 2)
+            start_idx = 0
+            for parent in last_level:
+                if max_conn <= 1:
+                    new_conn = 1
                 else:
-                    '''
-                    Generate n new children for the parent node.
-                    Connect any nodes in empty list to the first node generated
-                    '''
-                    for _ in range(new_nodes):
-                        temp = Icon(image, image)
-                        new_level.append(temp)
-                        while empty_nodes:
-                            empty_nodes.pop().children.append(temp)
-                        node.children.append(temp)
-            '''
-            If the empty_nodes list is not empty then we generated no new
-            nodes this round, start over on the same level.
-            Otherwise make the newly generated children the new parents
-            and move onto creating the next level.
-            '''
-            if not empty_nodes:
-                self.levels.append(new_level)
-                last_level = new_level
+                    new_conn = random.randint(1, max_conn)
+                end = min(start_idx + new_conn, len(new_level))
+                for i in range(start_idx, end):
+                    parent.children.append(new_level[i])
+                    has_parent[i] = True
+                start_idx = min(start_idx + new_conn - 1, len(new_level) - 1)
+            # Hook up oprhaned nodes
+            for chld, parent in zip(new_level, has_parent):
+                if not parent:
+                    last_level[-1].children.append(chld)
+
+            # Get ready to move onto next level
+            self.levels.append(new_level)
+            last_level = new_level
         '''
         Add final repair nodes.
         Before the boss players will have the option to repair.
         '''
-        rest = []
-        rest_nodes = min(4, len(self.levels[LAST]))
+        repair = []
+        repair_nodes = min(4, len(self.levels[LAST]))
         last = 0
-        if rest_nodes == len(self.levels[LAST]):
-            nodes_per_rest = 1
+        if repair_nodes == len(self.levels[LAST]):
+            nodes_per_repair = 1
         else:
-            nodes_per_rest = len(self.levels[LAST]) // rest_nodes
-        for i in range(rest_nodes):
+            nodes_per_repair = len(self.levels[LAST]) // repair_nodes
+        for i in range(repair_nodes):
             temp = Icon(*images['repair'])
-            rest.append(temp)
-            for parent in self.levels[LAST][i * nodes_per_rest : (i + 1) * nodes_per_rest]:
+            repair.append(temp)
+            for parent in self.levels[LAST][i * nodes_per_repair : (i + 1) * nodes_per_repair]:
                 parent.children.append(temp)
-        for parent in self.levels[LAST][i * nodes_per_rest:]:
+        for parent in self.levels[LAST][i * nodes_per_repair:]:
             parent.children.append(temp)
-        self.levels.append(rest)
+        self.levels.append(repair)
         ''' Add final boss node. '''
         boss = Icon(*images['boss'])
         for parent in self.levels[LAST]:
@@ -170,12 +167,13 @@ class IconTree(pygame.sprite.Group):
         Generate actual icons at each node positoin in each map
         Rest, Shop, Unknown, Minion
         '''
+        total_encounters = sum([len(lvl) for lvl in self.levels[1:-2]])
         node_counts =[int(total_encounters * .15),
                       int(total_encounters * .15),
                       int(total_encounters * 0.30),
-                      total_encounters]
+                      int(total_encounters)]
         # Skip 1st level (hidden root)
-        # Skip last two levels (rest / boss levels)
+        # Skip last two levels (repair / boss levels)
         first_two = 0
         for nodes in self.levels[1:-2]:
             for node in nodes:
@@ -191,7 +189,7 @@ class IconTree(pygame.sprite.Group):
         position = pygame.mouse.get_pos()
         for icon in self.sprites():
             if icon != self.root:
-                icon.draw(screen, icon.collide(position))
+                icon.draw(screen)
 
     def position(self):
         '''
@@ -228,15 +226,10 @@ class IconTree(pygame.sprite.Group):
                 self.down()
             elif up_rect.collidepoint(pos):
                 self.up()
-            self.connect(screen)
             self.draw(screen)
             screen.blit(legend, (580, 20))
             pygame.display.update()
             pygame.event.pump()
-
-    def connect(self, screen):
-        for child in self.root.children:
-            connect(screen, child)
 
     def up(self):
         # Stop scrolling when last level is about to go off the bottom
@@ -256,32 +249,38 @@ class Map:
   def __init__(self):
      self.images = {}
      #Boss
-     bi = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech-small.png'), (70, 70))
-     bi_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech.png'), (85, 85))
-     self.images['boss'] = (bi, bi_lg)
+     bi = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech-small.png').convert_alpha(), (70, 70))
+     bi_shadow = bi.copy()
+     bi_shadow.set_alpha(ALPHA)
+     self.images['boss'] = (bi, bi_shadow)
      #Minions
-     minion = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-small.png'), (40, 40))
-     minion_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot.png'), (50, 50))
-     self.images['minion'] = (minion, minion_lg)
+     minion = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-small.png').convert_alpha(), (40, 40))
+     minion_shadow = minion.copy()
+     minion_shadow.set_alpha(ALPHA)
+     self.images['minion'] = (minion, minion_shadow)
      #Stores
-     store = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank-small.png'), (40, 40))
-     store_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank.png'), (50, 50))
-     self.images['shop'] = (store, store_lg)
+     store = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank-small.png').convert_alpha(), (40, 40))
+     store_shadow = store.copy()
+     store_shadow.set_alpha(ALPHA)
+     self.images['shop'] = (store, store_shadow)
      #Unknown
-     unk = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-small.png'), (40, 40))
-     unk_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty.png'), (50, 50))
-     self.images['unknown'] = (unk, unk_lg)
+     unk = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-small.png').convert_alpha(), (40, 40))
+     unk_shadow = unk.copy()
+     unk_shadow.set_alpha(ALPHA)
+     self.images['unknown'] = (unk, unk_shadow)
      # Repair
-     rep_lg = pygame.transform.scale(pygame.image.load('assets/map_icons/auto-repair.png'), (50, 50))
-     rep = pygame.transform.scale(rep_lg, (40, 40))
-     self.images['repair'] = (rep, rep_lg)
+     rep = pygame.transform.scale(pygame.image.load('assets/map_icons/auto-repair.png').convert_alpha(), (40, 40))
+     rep_shadow = rep.copy()
+     rep_shadow.set_alpha(ALPHA)
+     self.images['repair'] = (rep, rep_shadow)
+
      # Background
      self.bg = pygame.transform.scale(pygame.image.load(os.path.join(BACKGROUND_PATH, "nebula/nebula09.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
      #Legend
      self.legend = pygame.transform.scale(pygame.image.load('assets/map_icons/Legend.png'), (200, 50))
      # Up/Down buttons
-     self.up = pygame.transform.scale(pygame.image.load(os.path.join(ICON_PATH, "upgrade.png")), (20, 20))
-     self.down = pygame.transform.scale(pygame.image.load(os.path.join(ICON_PATH, "downgrade.png")), (20, 20))
+     self.up = pygame.transform.scale(pygame.image.load(os.path.join(ICON_PATH, "upgrade.png")), (ICON_SIZE, ICON_SIZE))
+     self.down = pygame.transform.scale(pygame.image.load(os.path.join(ICON_PATH, "downgrade.png")), (ICON_SIZE, ICON_SIZE))
      self.down_rect = self.down.get_rect(bottomright=(SCREEN_WIDTH, SCREEN_HEIGHT))
      self.up_rect = self.up.get_rect(topright=self.down_rect.topleft)
 
@@ -291,7 +290,6 @@ class Map:
       player_loc = sector_map.root
       alive = True
       while alive:
-        pygame.time.Clock().tick(40)
         screen.blit(self.bg, (0, 0))
         screen.blit(self.legend, (580, 20))
         screen.blit(self.up, self.up_rect)
@@ -316,7 +314,6 @@ class Map:
                         elif sp.type == 'shop':
                             shop(screen, player, assets)
             if alive:
-                sector_map.connect(screen)
                 sector_map.draw(screen)
                 pygame.display.update()
         if player.current_health <= 0:

@@ -167,7 +167,7 @@ class Character(sprite.Sprite):
 class Player(Character):
     def __init__(self,
                 img_path=os.path.join(SHIPS_PATH, 'Ship3/Ship3.png'),
-                ctype='fighter', health=40, power=3, hand=3):
+                ctype='fighter', health=40, power=3, hand=5):
         super().__init__(img_path=img_path, max_health=health, explosion_path='Ship3')
         self.max_handsize = hand
         self.max_power = power

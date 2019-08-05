@@ -130,6 +130,7 @@ def targeting(screen, board, card, player, enemy_fleet):
                 screen.blit(target.get_img(), position)
         pygame.event.pump()
         pygame.display.update()
+    position = pygame.mouse.get_pos()
     if card.ctype == 'TARGET_ATTACK':
         targeted = [sp for sp in enemy_fleet if sp.collision(position)]
         if targeted:
