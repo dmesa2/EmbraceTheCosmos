@@ -9,7 +9,6 @@ from character import *
 from gamestate import *
 from map import *
 from gameassets import GameAssets
-from instructions import Instructions
 from escape import Escape
 
 def new_player(assets):
@@ -44,7 +43,7 @@ def main_menu(screen, myfont, map_call, instructions_call, escape_call, assets):
                 if event.key == pygame.K_ESCAPE:
                     escape_call.escape_menu(screen)
                     break
-            if event.type == QUIT:
+            elif event.type == QUIT:
                 pygame.quit()
                 sys.exit()
                 break

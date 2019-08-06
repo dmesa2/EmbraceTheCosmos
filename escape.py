@@ -19,6 +19,11 @@ class Escape:
           mouse = pygame.mouse.get_pos()
           click = pygame.mouse.get_pressed()
 
+          for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+              if event.key == pygame.K_ESCAPE:
+                return False             
+
           if 340+170 > mouse[0] > 340 and 240+50 > mouse[1] > 240:
             #pygame.draw.rect(screen, GRAY,(340,240,170,50))
             pygame.draw.rect(screen, BRIGHT_GRAY,(340,240,170,50))
@@ -49,9 +54,9 @@ class Escape:
         pygame.time.Clock().tick(40)
         screen.blit(self.bg, (325, 200))
         for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-                break
-            pygame.display.update()
+          if event.type == QUIT:
+              pygame.quit()
+              sys.exit()
+              break
+        pygame.display.update()
         ret = self.buttons(screen)

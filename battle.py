@@ -9,6 +9,8 @@ from gamestate import *
 from buttons import Button, GameBoard
 from gameassets import GameAssets
 from gameover import game_over
+from instructions import Instructions
+from escape import Escape
 
 def salvage(screen, board, player, assets):
     '''
@@ -54,6 +56,7 @@ def salvage(screen, board, player, assets):
     choices = cards.Hand()
     choices.add(*card_choices)
     current_choice = None
+
     while True:
         pygame.time.Clock().tick(40)
         board.draw(screen, player.power, player.max_power)
@@ -142,7 +145,7 @@ def targeting(screen, board, card, player, enemy_fleet):
     pygame.mouse.set_visible(True)
     return ret
 
-def battle(screen, player, assets, boss=False):
+def battle(screen, player, assets, escape_call, boss=False):
     pygame.font.init()
     player.move(0, SCREEN_HEIGHT / 3)
     board = GameBoard("spacefield_a-000.png")
@@ -190,7 +193,12 @@ def battle(screen, player, assets, boss=False):
                         enemy = (e for e in enemy_fleet.sprites())
                         enemy_fleet.drain_shields()
                         player_turn = False
-                    else:
+
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        escape_call.escape_menu(screen)
+                        break
+                else:
                         # Check for card collisions for highlighting/selection
                         for card in player.hand:
                             if card.cost <= player.power and card.rect.collidepoint(mouse_pos):
@@ -234,6 +242,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     # declare the size of the map
     assets = GameAssets()
+    escape_call = Escape()
     player = Player()
     player.move(0, SCREEN_HEIGHT / 3)
     basics = assets.all_cards['basic']
@@ -244,6 +253,6 @@ if __name__ == "__main__":
         player.all_cards.append(assets.all_cards['fighter'][0].copy())
     ret = True
     while ret:
-        ret = battle(screen, player, assets, True)
+        ret = battle(screen, player, assets, escape_call, True)
     game_over(screen)
     pygame.display.quit()
