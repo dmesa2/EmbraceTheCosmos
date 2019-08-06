@@ -46,10 +46,20 @@ class Hand(pygame.sprite.Group):
     def mincost(self):
         return min(self.sprites(), key=lambda sp : sp.cost).cost
 
+    def buy_card(self, player, pos):
+        for card in self.sprites():
+            if card.rect.collidepoint(pos):
+                if card.price <= player.credits:
+                    player.credits -= card.price
+                    self.remove(card)
+                    player.all_cards.append(card)
+
 
 class Card(pygame.sprite.Sprite):
     def __init__(self, x, y, name, ctype, cost, pclass, damage, shield, price, image_path=None, image=None):
         super().__init__()
+        pygame.font.init()
+        font = pygame.font.Font(None, 16)
         if image_path:
             pth = os.path.join(CARD_PATH, image_path)
             self.image_path = image_path
@@ -73,6 +83,8 @@ class Card(pygame.sprite.Sprite):
         self.damage = damage
         self.shield = shield
         self.price = price
+        self.price_str = font.render("{} credits".format(self.price), 
+                                        False, Color("gold"))
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)

@@ -9,7 +9,7 @@
     "damage" : 6,
     "status" : {},
     "shield" : 0,
-		"price"  : 10
+	"price"  : 10
   },
   {
     "name" : "Shields Up",
@@ -21,7 +21,7 @@
     "damage" : 0,
     "status" : {},
     "shield" : 5,
-		"price"  : 8
+	"price"  : 8
   },
   {
     "name" : "Missile Barrage",
@@ -33,7 +33,7 @@
     "damage" : 10,
     "status" : {},
     "shield" : 0,
-		"price"  : 7
+	"price"  : 7
   },
   {
     "name" : "Orbital Laser",
@@ -45,7 +45,7 @@
     "damage" : 6,
     "status" : {},
     "shield" : 0,
-		"price"  : 8
+	"price"  : 8
   },
   {
     "name" : "Bordkanone Cannon",
@@ -57,7 +57,7 @@
     "damage" : 8,
     "status" : {},
     "shield" : 0,
-		"price"  : 13
+	"price"  : 13
   },
   {
     "name" : "Ion Torpedoes",
@@ -69,7 +69,7 @@
     "damage" : 4,
     "status" : {},
     "shield" : 0,
-		"price"  : 6
+	"price"  : 6
   },
   {
     "name" : "Positron Torpedoes",
@@ -81,7 +81,7 @@
     "damage" : 14,
     "status" : {},
     "shield" : 0,
-		"price"  : 17
+	"price"  : 17
   },
   {
     "name" : "Collapsor Beam",
@@ -93,7 +93,7 @@
     "damage" : 9,
     "status" : {},
     "shield" : 0,
-		"price"  : 10
+	"price"  : 10
   },
   {
     "name" : "Disruptor Beam",
@@ -105,7 +105,7 @@
     "damage" : 6,
     "status" : {},
     "shield" : 0,
-		"price"  : 5
+	"price"  : 5
   },
   {
     "name" : "Phased Plasmic",

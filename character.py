@@ -55,7 +55,7 @@ class EnemyFleet(sprite.Group):
 
 class Character(sprite.Sprite):
     def __init__(self, img_path=None, image=None, explosion_path=None,
-                explosions=None, max_health=40, credits=100):
+                explosions=None, max_health=40, credits=40):
         super().__init__()
         if img_path:
             self.image = pygame.image.load(img_path)
