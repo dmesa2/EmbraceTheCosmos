@@ -34,10 +34,13 @@ class EnemyFleet(sprite.Group):
             loot = sp.dead(screen, board, player, enemy_group)
         return loot
 
-    def spawn(self, ec):
-        group = random.choice(ec.groupings)
-        for sp in group:
-            self.add(ec.sprite_buffer[sp].copy())
+    def spawn(self, assets, boss):
+        if boss:
+            self.add(assets.enemy_choices.sprite_buffer['boss'])
+        else:
+            group = random.choice(assets.enemy_choices.groupings)
+            for sp in group:
+                self.add(assets.enemy_choices.sprite_buffer[sp].copy())
         self.place()
 
     def place(self):
@@ -181,7 +184,7 @@ class Player(Character):
         self.graveyard = []
         self.deck = []
         self.in_play = []
-
+        
     def draw_hand(self):
         for _ in range(self.max_handsize):
             # If deck is empty reshuffle graveyard into deck before drawing cards
@@ -213,15 +216,21 @@ class Player(Character):
         return False
 
 class Enemy(Character):
-    def __init__(self, image, health, shield, credits, atk_pattern, explosion_path=None, explosions=None):
+    def __init__(self, image, health, shield, credits, atk_pattern, explosion_path=None, explosions=None, is_boss=False):
         super().__init__(image=image, credits=credits, max_health=health, explosion_path=explosion_path, explosions=explosions)
+        if is_boss:
+            self.image = pygame.transform.scale2x(pygame.transform.rotate(self.image, -90))
         self.shield = shield
         self.attacks = atk_pattern
         self.attack_idx = 0
+        self.is_boss = is_boss
 
     def dead(self, screen, board, player, enemy_group):
         if self.current_health <= 0:
-            self.explode(screen, board, player, enemy_group)
+            if self.is_boss:
+                self.remove(enemy_group)
+            else:
+                self.explode(screen, board, player, enemy_group)
             return self.credits
         return 0
 

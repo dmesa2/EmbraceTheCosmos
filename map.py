@@ -295,8 +295,10 @@ class Map:
                 for sp in sector_map.sprites():
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
-                        if sp.type == 'minion' or sp.type == 'boss':
+                        if sp.type == 'minion':
                             alive = battle(screen, player, assets)
+                        elif sp.type == 'boss':
+                            alive = battle(screen, player, assets, boss=True)
                         elif sp.type == 'unknown':
                             alive = events(screen, player, assets)
                         elif sp.type == 'repair':

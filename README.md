@@ -50,6 +50,8 @@ Spaceship sprites sourced from [Free Pixel Art Enemy Spaceship 2D Sprites](https
 
 Icons made by [delapouite](http://delapouite.com), [lorc](http://lorcblog.blogspot.com), sourced from [game-icons.net](https://game-icons.net).  
 
+More sprites from [MillionthVector](http://millionthvector.blogspot.com/p/free-sprites.html) 
+
 
 ## License
 This program is licensed under the "MIT License". Please see the `LICENSE` file in source distribution for license terms.
