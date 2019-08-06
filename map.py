@@ -305,7 +305,7 @@ class Map:
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
                         if sp.type == 'minion' or sp.type == 'boss':
-                            alive = battle(screen, player, assets)
+                            alive = battle(screen, player, assets, escape_call)
                         elif sp.type == 'unknown':
                             alive = events(screen, player, assets)
                         elif sp.type == 'repair':
