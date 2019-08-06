@@ -10,6 +10,7 @@ from battle import battle
 from repair import repair
 from shop import shop
 from gameover import game_over
+from escape import Escape
 
 LAST = -1
 FIRST = 1
@@ -272,6 +273,8 @@ class Map:
      self.up_rect = self.up.get_rect(topright=self.down_rect.topleft)
 
   def main_map(self, screen, player, assets):
+
+      escape_call = Escape()
       sector_map = IconTree(self.images)
       sector_map.update()
       player_loc = sector_map.root
@@ -283,10 +286,16 @@ class Map:
         screen.blit(self.down, self.down_rect)
 
         for event in pygame.event.get():
+            
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
                 break
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    escape_call.escape_menu(screen)
+                    break
             elif event.type == MOUSEBUTTONDOWN:
                 position = pygame.mouse.get_pos()
                 if self.up_rect.collidepoint(position) or self.down_rect.collidepoint(position):
@@ -295,7 +304,7 @@ class Map:
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
                         if sp.type == 'minion' or sp.type == 'unknown' or sp.type == 'boss':
-                            alive = battle(screen, player, assets)
+                            alive = battle(screen, player, assets, escape_call)
                         elif sp.type == 'repair':
                             repair(screen, player, assets)
                         elif sp.type == 'shop':
