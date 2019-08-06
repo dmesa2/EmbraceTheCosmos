@@ -8,6 +8,7 @@ from pygame.locals import *
 from gamestate import *
 from battle import battle
 from repair import repair
+from events import events
 from shop import shop
 from gameover import game_over
 from escape import Escape
@@ -303,8 +304,13 @@ class Map:
                 for sp in sector_map.sprites():
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
-                        if sp.type == 'minion' or sp.type == 'unknown' or sp.type == 'boss':
-                            alive = battle(screen, player, assets, escape_call)
+<<<<<<< HEAD
+=======
+                        if sp.type == 'minion' or sp.type == 'boss':
+                            alive = battle(screen, player, assets)
+                        elif sp.type == 'unknown':
+                            alive = events(screen, player, assets)
+>>>>>>> 2895f1d541329955f0f9192535b59ef57a5d2e00
                         elif sp.type == 'repair':
                             repair(screen, player, assets)
                         elif sp.type == 'shop':

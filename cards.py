@@ -46,10 +46,20 @@ class Hand(pygame.sprite.Group):
     def mincost(self):
         return min(self.sprites(), key=lambda sp : sp.cost).cost
 
+    def buy_card(self, player, pos):
+        for card in self.sprites():
+            if card.rect.collidepoint(pos):
+                if card.price <= player.credits:
+                    player.credits -= card.price
+                    self.remove(card)
+                    player.all_cards.append(card)
+
 
 class Card(pygame.sprite.Sprite):
-    def __init__(self, x, y, name, ctype, cost, pclass, damage, shield, image_path=None, image=None):
+    def __init__(self, x, y, name, ctype, cost, pclass, damage, shield, price, image_path=None, image=None):
         super().__init__()
+        pygame.font.init()
+        font = pygame.font.Font(None, 16)
         if image_path:
             pth = os.path.join(CARD_PATH, image_path)
             self.image_path = image_path
@@ -72,6 +82,9 @@ class Card(pygame.sprite.Sprite):
         self.pclass = pclass
         self.damage = damage
         self.shield = shield
+        self.price = price
+        self.price_str = font.render("{} credits".format(self.price), 
+                                        False, Color("gold"))
 
     def update(self):
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -82,7 +95,7 @@ class Card(pygame.sprite.Sprite):
     def copy(self):
         return Card(self.pos[0], self.pos[1], self.name,
                     self.ctype, self.cost, self.pclass, self.damage,
-                    self.shield, image=self.image)
+                    self.shield, self.price, image=self.image)
 
     def process_card(self, player, enemy_group):
         position = pygame.mouse.get_pos()
@@ -99,7 +112,7 @@ class Card(pygame.sprite.Sprite):
 
 def read_card(card):
     return Card(0, 0, card['name'], card['type'], card['cost'],
-             card['class'], card['damage'], card['shield'],
+             card['class'], card['damage'], card['shield'], card['price'],
              image_path=card['image'])
 
 def load_cards(fname):

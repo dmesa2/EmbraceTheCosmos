@@ -8,7 +8,8 @@
     "cost" : 0,
     "damage" : 6,
     "status" : {},
-    "shield" : 0
+    "shield" : 0,
+		"price"  : 0
   },
   {
     "name" : "heavy beam",
@@ -19,7 +20,8 @@
     "cost" : 0,
     "damage" : 10,
     "status" : {},
-    "shield" : 0
+    "shield" : 0,
+		"price"  : 0
   },
   {
     "name" : "mini shield",
@@ -30,7 +32,8 @@
     "cost" : 0,
     "damage" : 0,
     "status" : {},
-    "shield" : 6
+    "shield" : 6,
+		"price"  : 0
   },
   {
     "name" : "large shield",
@@ -41,7 +44,8 @@
     "cost" : 0,
     "damage" : 0,
     "status" : {},
-    "shield" : 15
+    "shield" : 15,
+		"price"  : 0
   },
   {
     "name" : "sleep",
@@ -52,6 +56,7 @@
     "cost" : 0,
     "damage" : 0,
     "status" : {},
-    "shield" : 0
+    "shield" : 0,
+		"price"  : 0
   }
 ]
