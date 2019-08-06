@@ -17,7 +17,9 @@ def shop(screen, player, assets):
     small = pygame.font.Font(None, 16)
     money = pygame.transform.scale(assets.coin, (16, 16))
     black_market = large.render("Hober's Black Market", False, WHITE)
+    card_cost = small.render("10 Coins", False, WHITE)
     bm_rect = black_market.get_rect(midtop=(SCREEN_WIDTH / 2, 0))
+    cc_rect = card_cost.get_rect(midtop=(SCREEN_WIDTH / 2, 0))
     bg = pygame.image.load(os.path.join(BACKGROUND_PATH, 'nebula', 'nebula06.png'))
     bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -51,6 +53,7 @@ def shop(screen, player, assets):
         for card in for_sale.sprites():
             screen.blit(card.image, card.rect)
             screen.blit(money, card.rect.bottomleft)
+            screen.blit(card_cost, card.rect.midbottom)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == QUIT:
