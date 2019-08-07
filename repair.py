@@ -5,6 +5,7 @@ import gameassets
 from character import Player
 import sys
 import os
+from escape import Escape
 
 def repair(screen, player, assets):
     pygame.font.init()
@@ -30,6 +31,8 @@ def repair(screen, player, assets):
     screen.blit(cont_no, rect)
     pygame.display.update()
     pygame.time.wait(1000)
+    escape_call = Escape()
+
     while True:
         pygame.time.Clock().tick(40)
         pos = pygame.mouse.get_pos()
@@ -41,6 +44,12 @@ def repair(screen, player, assets):
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    escape_call.escape_menu(screen)
+                    break
+
             elif event.type == MOUSEBUTTONDOWN:
                 if rect.collidepoint(pos):
                     return
