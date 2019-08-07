@@ -36,5 +36,14 @@
         "attack_pattern" : ["mini shield", "mini shield",
           "mini shield", "mini shield", "heavy beam"],
         "credits" : 20
+    },
+    {
+        "name" : "boss",
+        "model" : "bgbattleship",
+        "image_path" : "bgbattleship.png",
+        "max_health" : 60,
+        "shield" : 0,
+        "attack_pattern" : ["beam", "beam", "heavy beam"],
+        "credits" : 500
     }
 ]

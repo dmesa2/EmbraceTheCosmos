@@ -16,6 +16,7 @@ class GameAssets:
         ec = cards.load_cards(os.path.join(ASSETS_PATH, CARD_PATH, 'enemy_cards.json'))['enemy']
         self.enemy_cards = {e.name : e for e in ec}
         self.coin = pygame.image.load(os.path.join(ICON_PATH, "metal-disc.png"))
+        
     def get_cards(self, ncards, class_cards=False, neutral_cards=False):
         cards = []
         if class_cards:

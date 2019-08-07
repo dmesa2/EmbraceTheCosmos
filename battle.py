@@ -145,7 +145,7 @@ def targeting(screen, board, card, player, enemy_fleet):
     pygame.mouse.set_visible(True)
     return ret
 
-def battle(screen, player, assets, escape_call):
+def battle(screen, player, assets, escape_call, boss=False):
     pygame.font.init()
     player.move(0, SCREEN_HEIGHT / 3)
     board = GameBoard("spacefield_a-000.png")
@@ -155,10 +155,12 @@ def battle(screen, player, assets, escape_call):
     alwayson = False
     enemy = iter(())
     # change to dynamically create enemies
-    enemy_fleet.spawn(assets.enemy_choices)
+    enemy_fleet.spawn(assets, boss)
 
     for enemy in enemy_fleet:
         enemy.flip()
+    
+        
     enemy_fleet.update()
     player.update()
     player.reset_decks()
@@ -251,6 +253,6 @@ if __name__ == "__main__":
         player.all_cards.append(assets.all_cards['fighter'][0].copy())
     ret = True
     while ret:
-        ret = battle(screen, player, assets, escape_call)
+        ret = battle(screen, player, assets, escape_call, True)
     game_over(screen)
     pygame.display.quit()
