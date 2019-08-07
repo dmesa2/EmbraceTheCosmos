@@ -36,7 +36,7 @@ class EnemyFleet(sprite.Group):
 
     def spawn(self, assets, boss):
         if boss:
-            self.add(assets.enemy_choices.sprite_buffer['boss'])
+            self.add(assets.enemy_choices.sprite_buffer['boss'].copy())
         else:
             group = random.choice(assets.enemy_choices.groupings)
             for sp in group:
@@ -71,7 +71,7 @@ class Character(sprite.Sprite):
         else:
             self.explosions = explosions
         self.pos = [0, 0]
-        self.rect = self.image.get_rect(topleft=self.pos)
+        self.rect = self.image.get_rect(midleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
         self.bounding_rect.center = self.rect.center
         self.health_bar = self.health_init()
@@ -82,7 +82,7 @@ class Character(sprite.Sprite):
         self.credits = credits
 
     def update(self):
-        self.rect = self.image.get_rect(topleft=self.pos)
+        self.rect = self.image.get_rect(midleft=self.pos)
         self.bounding_rect = self.image.get_bounding_rect()
         self.bounding_rect.center = self.rect.center
         self.health_init()
@@ -184,7 +184,7 @@ class Player(Character):
         self.graveyard = []
         self.deck = []
         self.in_play = []
-        
+
     def draw_hand(self):
         for _ in range(self.max_handsize):
             # If deck is empty reshuffle graveyard into deck before drawing cards
@@ -255,7 +255,7 @@ class Target(sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self, position):
-        self.rect = self.image.get_rect(topleft=position)
+        self.rect = self.image.get_rect(center=position)
 
     def get_img(self):
         return self.image

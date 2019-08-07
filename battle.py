@@ -99,7 +99,6 @@ def targeting(screen, board, card, player, enemy_fleet):
     '''
     pygame.mouse.set_visible(False)
     target = Target()
-    targeted = False
     ret = False
     card_area = player.hand.get_area()
 
@@ -134,8 +133,8 @@ def targeting(screen, board, card, player, enemy_fleet):
         pygame.display.update()
     position = pygame.mouse.get_pos()
     if card.ctype == 'TARGET_ATTACK':
-        targeted = [sp for sp in enemy_fleet if sp.collision(position)]
-        if targeted:
+        # A collision is detected with an enemy sprite
+        if [sp for sp in enemy_fleet if sp.collision(position)]:
             card.process_card(player, enemy_fleet)
             ret = True
     else:
@@ -159,8 +158,8 @@ def battle(screen, player, assets, escape_call, boss=False):
 
     for enemy in enemy_fleet:
         enemy.flip()
-    
-        
+
+
     enemy_fleet.update()
     player.update()
     player.reset_decks()
@@ -193,22 +192,23 @@ def battle(screen, player, assets, escape_call, boss=False):
                         enemy = (e for e in enemy_fleet.sprites())
                         enemy_fleet.drain_shields()
                         player_turn = False
-
+                    else:
+                            # Check for card collisions for highlighting/selection
+                            for card in player.hand:
+                                if card.cost <= player.power and card.rect.collidepoint(mouse_pos):
+                                    card.highlight = True
+                                    if targeting(screen, board, card, player, enemy_fleet):
+                                        player.hand.position_hand()
+                                        player.power -= card.cost
+                                        loot = enemy_fleet.dead(screen, board, player, enemy_fleet)
+                                    card.highlight = False
+                                    break
+                                    
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         escape_call.escape_menu(screen)
                         break
-                else:
-                        # Check for card collisions for highlighting/selection
-                        for card in player.hand:
-                            if card.cost <= player.power and card.rect.collidepoint(mouse_pos):
-                                card.highlight = True
-                                if targeting(screen, board, card, player, enemy_fleet):
-                                    player.hand.position_hand()
-                                    player.power -= card.cost
-                                    loot = enemy_fleet.dead(screen, board, player, enemy_fleet)
-                                card.highlight = False
-                                break
+
             # if the player lacks the power to play any cards
             # leave highlighting of end turn button always on
             alwayson = not player.hand or player.hand.mincost() > player.power
@@ -253,6 +253,6 @@ if __name__ == "__main__":
         player.all_cards.append(assets.all_cards['fighter'][0].copy())
     ret = True
     while ret:
-        ret = battle(screen, player, assets, escape_call, True)
+        ret = battle(screen, player, assets, escape_call)
     game_over(screen)
     pygame.display.quit()
