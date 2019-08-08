@@ -3,10 +3,10 @@ import pygame
 from pygame.locals import *
 from gamestate import *
 import battle
-
+import escape
 from gameassets import GameAssets
 
-def find_money(screen, player, assets):
+def find_money(screen, player, assets, escape_call):
     cash = random.randint(100, 250)
     player.credits += cash
     pygame.font.init()
@@ -41,7 +41,7 @@ def find_money(screen, player, assets):
                     return True
         pygame.display.update()
 
-def events(screen, player, assets):
+def events(screen, player, assets, escape_call):
     events = [battle.battle, find_money]
     event_choice = random.choice(events)
-    return event_choice(screen, player, assets)
+    return event_choice(screen, player, assets, escape_call)

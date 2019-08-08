@@ -7,7 +7,7 @@ import sys
 import os
 from escape import Escape
 
-def repair(screen, player, assets):
+def repair(screen, player, assets, escape_call):
     pygame.font.init()
     bg = pygame.transform.scale(pygame.image.load(os.path.join(ASSETS_PATH, 'Background', 'nebula', 'nebula07.png')), (SCREEN_WIDTH, SCREEN_HEIGHT))
     large = pygame.font.Font(None, 64)
@@ -21,7 +21,7 @@ def repair(screen, player, assets):
     rect = cont_no.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (2 / 3)))
     player_rect = player.image.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6))
     player.move(player_rect.x, player_rect.y)
-    player.current_health += player.current_health * 0.30
+    player.current_health += int(player.max_health * 0.30)
     if player.current_health > player.max_health:
         player.current_health = player.max_health
     screen.blit(bg, (0, 0))

@@ -91,7 +91,7 @@ def salvage(screen, board, player, assets):
         choices.draw(screen)
         pygame.display.update()
 
-def targeting(screen, board, card, player, enemy_fleet):
+def targeting(screen, board, card, player, enemy_fleet, assets):
     '''
     Function called when a card is selected by the player
     Sucessful targeting means the card is used
@@ -135,11 +135,21 @@ def targeting(screen, board, card, player, enemy_fleet):
     if card.ctype == 'TARGET_ATTACK':
         # A collision is detected with an enemy sprite
         if [sp for sp in enemy_fleet if sp.collision(position)]:
-            card.process_card(player, enemy_fleet)
+            
+            '''
+            laser, l_rect = assets.laser_img, assets.laser_rect
+            l_rect.midleft = player.rect.midright
+            for i in range(5):
+                screen.blit(laser, l_rect)
+                pygame.display.update()
+                pygame.time.wait(50)
+                pygame.draw.rect(screen, BLACK, l_rect)
+                l_rect.x += 50'''
+            card.process_card(screen, player, enemy_fleet, assets)
             ret = True
     else:
         if not card_area.collidepoint(position):
-            card.process_card(player, enemy_fleet)
+            card.process_card(screen, player, enemy_fleet, assets)
             ret = True
     pygame.mouse.set_visible(True)
     return ret
@@ -158,7 +168,6 @@ def battle(screen, player, assets, escape_call, boss=False):
 
     for enemy in enemy_fleet:
         enemy.flip()
-
 
     enemy_fleet.update()
     player.update()
@@ -189,6 +198,7 @@ def battle(screen, player, assets, escape_call, boss=False):
                     # End players turn
                     if board.end_turn.collision(mouse_pos):
                         player.end_turn(board)
+                        # create generator to allow each enemy to take their turn to attack
                         enemy = (e for e in enemy_fleet.sprites())
                         enemy_fleet.drain_shields()
                         player_turn = False
@@ -197,7 +207,7 @@ def battle(screen, player, assets, escape_call, boss=False):
                             for card in player.hand:
                                 if card.cost <= player.power and card.rect.collidepoint(mouse_pos):
                                     card.highlight = True
-                                    if targeting(screen, board, card, player, enemy_fleet):
+                                    if targeting(screen, board, card, player, enemy_fleet, assets):
                                         player.hand.position_hand()
                                         player.power -= card.cost
                                         loot = enemy_fleet.dead(screen, board, player, enemy_fleet)
@@ -217,7 +227,7 @@ def battle(screen, player, assets, escape_call, boss=False):
             # enemies take their turns attacking
             try:
                 current = next(enemy)
-                current.attack(player, assets)
+                current.attack(screen, player, assets)
                 pygame.time.wait(200)
                 if player.dead(screen, board, player, enemy_fleet):
                     return False

@@ -309,11 +309,11 @@ class Map:
                         elif sp.type == 'boss':
                             alive = battle(screen, player, assets, escape_call, boss=True)
                         elif sp.type == 'unknown':
-                            alive = events(screen, player, assets)
+                            alive = events(screen, player, assets, escape_call)
                         elif sp.type == 'repair':
-                            repair(screen, player, assets)
+                            repair(screen, player, assets, escape_call)
                         elif sp.type == 'shop':
-                            shop(screen, player, assets)
+                            shop(screen, player, assets, escape_call)
             if alive:
                 sector_map.draw(screen)
                 pygame.display.update()

@@ -97,8 +97,19 @@ class Card(pygame.sprite.Sprite):
                     self.ctype, self.cost, self.pclass, self.damage,
                     self.shield, self.price, image=self.image)
 
-    def process_card(self, player, enemy_group):
+    def process_card(self, screen, player, enemy_group, assets):
         position = pygame.mouse.get_pos()
+        if self.ctype == "TARGET_ATTACK" or self.ctype == "AREA_ATTACK":
+            laser, l_rect = assets.laser_img, assets.laser_rect
+            l_rect.midleft = player.rect.midright
+            # Shoot laser
+            for i in range(5):
+                screen.blit(laser, l_rect)
+                pygame.display.update()
+                pygame.time.wait(50)
+                pygame.draw.rect(screen, BLACK, l_rect)
+                l_rect.x += 50
+
         if self.ctype == "TARGET_ATTACK":
             targeted = [sp for sp in enemy_group if sp.collision(position)]
             if targeted:

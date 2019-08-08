@@ -4,6 +4,7 @@ from gamestate import *
 import os
 import cards
 import random
+import spritesheet
 
 class GameAssets:
     def __init__(self):
@@ -16,7 +17,11 @@ class GameAssets:
         ec = cards.load_cards(os.path.join(ASSETS_PATH, CARD_PATH, 'enemy_cards.json'))['enemy']
         self.enemy_cards = {e.name : e for e in ec}
         self.coin = pygame.image.load(os.path.join(ICON_PATH, "metal-disc.png"))
-        
+        laser_beams = spritesheet.Spritesheet(os.path.join(ASSETS_PATH, 'Misc', 'beams.png'))
+        self.laser_img = laser_beams.image_at((210, 310, 50, 90))
+        self.laser_img = pygame.transform.rotate(self.laser_img, 90)
+        self.laser_rect = self.laser_img.get_rect()
+         
     def get_cards(self, ncards, class_cards=False, neutral_cards=False):
         cards = []
         if class_cards:

@@ -4,10 +4,11 @@ from gamestate import *
 import gameassets
 import character
 import cards
+import escape
 import sys
 import os
 
-def shop(screen, player, assets):
+def shop(screen, player, assets, escape_call):
     ncards = 6
     pygame.font.init()
     # Set up icons/fonts to be drawn

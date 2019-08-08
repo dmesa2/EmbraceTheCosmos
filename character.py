@@ -193,6 +193,7 @@ class Player(Character):
                 self.deck = self.graveyard.copy()
                 self.graveyard = []
             c = self.deck.pop()
+            c.highlight = False
             self.hand.add(c)
 
     def reset_decks(self):
@@ -234,11 +235,20 @@ class Enemy(Character):
             return self.credits
         return 0
 
-    def attack(self, player, assets):
+    def attack(self, screen, player, assets):
         card = assets.enemy_cards[self.attacks[self.attack_idx]]
         if card.ctype == "BOOST":
             self.shield += card.shield
         elif card.ctype == "TARGET_ATTACK":
+            laser, l_rect = assets.laser_img, assets.laser_rect
+            l_rect.midright = self.rect.midleft
+            # Shoot laser
+            for i in range(5):
+                screen.blit(laser, l_rect)
+                pygame.display.update()
+                pygame.time.wait(50)
+                pygame.draw.rect(screen, BLACK, l_rect)
+                l_rect.x -= 50
             player.damage(card.damage)
         self.attack_idx = (self.attack_idx + 1) % len(self.attacks)
 
