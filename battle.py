@@ -227,8 +227,8 @@ def battle(screen, player, assets, escape_call, boss=False):
             # enemies take their turns attacking
             try:
                 current = next(enemy)
+                pygame.time.wait(100)
                 current.attack(screen, player, assets)
-                pygame.time.wait(200)
                 if player.dead(screen, board, player, enemy_fleet):
                     return False
             except StopIteration:

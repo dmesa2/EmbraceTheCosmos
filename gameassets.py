@@ -21,7 +21,10 @@ class GameAssets:
         self.laser_img = laser_beams.image_at((210, 310, 50, 90))
         self.laser_img = pygame.transform.rotate(self.laser_img, 90)
         self.laser_rect = self.laser_img.get_rect()
-         
+        self.shield_effect = pygame.transform.scale(
+                                pygame.image.load(os.path.join(ASSETS_PATH, 'Misc', 'spr_shield.png')),
+                                (80, 80)) 
+
     def get_cards(self, ncards, class_cards=False, neutral_cards=False):
         cards = []
         if class_cards:
