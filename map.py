@@ -46,13 +46,13 @@ class Icon(pygame.sprite.Sprite):
         [pygame.draw.line(screen, ORCHIRD, self.rect.midtop, child.rect.midbottom) for child in self.children]
 
 
-    def draw(self, screen, access=False):
+    def draw(self, screen, position, access=False):
         if self.y < -50 or self.y > SCREEN_HEIGHT + 50:
             return
-        if access:
-            screen.blit(self.image, self.rect)
-        else:
+        if self == position:
             screen.blit(self.shadow_image, self.rect)
+        else:
+            screen.blit(self.image, self.rect)
         self.connect(screen)
 
     def up(self):
@@ -174,11 +174,10 @@ class IconTree(pygame.sprite.Group):
         # generate positions for each node based on the number of nodes per level
         self.position()
 
-    def draw(self, screen):
-        position = pygame.mouse.get_pos()
+    def draw(self, screen, position):
         for icon in self.sprites():
             if icon != self.root:
-                icon.draw(screen)
+                icon.draw(screen, position)
 
     def position(self):
         '''
@@ -200,7 +199,7 @@ class IconTree(pygame.sprite.Group):
             y_coord -= delta_y
         self.update()
 
-    def scroll(self, screen, bg, legend, up, down, up_rect, down_rect):
+    def scroll(self, screen, player_loc, bg, legend, up, down, up_rect, down_rect):
         '''
         Enables scrolling of map with arrow icons at bottom right hand side.
         Will stop when the last row of icons display is going off the screen.
@@ -215,7 +214,7 @@ class IconTree(pygame.sprite.Group):
                 self.down()
             elif up_rect.collidepoint(pos):
                 self.up()
-            self.draw(screen)
+            self.draw(screen, player_loc)
             screen.blit(legend, (580, 20))
             pygame.display.update()
             pygame.event.pump()
@@ -238,29 +237,24 @@ class Map:
   def __init__(self):
      self.images = {}
      #Boss
-     bi = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech-small.png').convert_alpha(), (70, 70))
-     bi_shadow = bi.copy()
-     bi_shadow.set_alpha(ALPHA)
+     bi = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech.png').convert_alpha(), (70, 70))
+     bi_shadow = pygame.transform.scale(pygame.image.load('assets/map_icons/battle-mech-here.png').convert_alpha(), (70, 70))
      self.images['boss'] = (bi, bi_shadow)
      #Minions
-     minion = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-small.png').convert_alpha(), (40, 40))
-     minion_shadow = minion.copy()
-     minion_shadow.set_alpha(ALPHA)
+     minion = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot.png').convert_alpha(), (40, 40))
+     minion_shadow = pygame.transform.scale(pygame.image.load('assets/map_icons/spider-bot-here.png').convert_alpha(), (40, 40))
      self.images['minion'] = (minion, minion_shadow)
      #Stores
-     store = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank-small.png').convert_alpha(), (40, 40))
-     store_shadow = store.copy()
-     store_shadow.set_alpha(ALPHA)
+     store = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank.png').convert_alpha(), (40, 40))
+     store_shadow = pygame.transform.scale(pygame.image.load('assets/map_icons/energy-tank-here.png').convert_alpha(), (40, 40))
      self.images['shop'] = (store, store_shadow)
      #Unknown
-     unk = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-small.png').convert_alpha(), (40, 40))
-     unk_shadow = unk.copy()
-     unk_shadow.set_alpha(ALPHA)
+     unk = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty.png').convert_alpha(), (40, 40))
+     unk_shadow = pygame.transform.scale(pygame.image.load('assets/map_icons/uncertainty-here.png').convert_alpha(), (40, 40))
      self.images['unknown'] = (unk, unk_shadow)
      # Repair
      rep = pygame.transform.scale(pygame.image.load('assets/map_icons/auto-repair.png').convert_alpha(), (40, 40))
-     rep_shadow = rep.copy()
-     rep_shadow.set_alpha(ALPHA)
+     rep_shadow = pygame.transform.scale(pygame.image.load('assets/map_icons/auto-repair-here.png').convert_alpha(), (40, 40))
      self.images['repair'] = (rep, rep_shadow)
 
      # Background
@@ -287,7 +281,7 @@ class Map:
         screen.blit(self.down, self.down_rect)
 
         for event in pygame.event.get():
-            
+
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -300,7 +294,7 @@ class Map:
             elif event.type == MOUSEBUTTONDOWN:
                 position = pygame.mouse.get_pos()
                 if self.up_rect.collidepoint(position) or self.down_rect.collidepoint(position):
-                    sector_map.scroll(screen, self.bg, self.legend, self.up, self.down, self.up_rect, self.down_rect)
+                    sector_map.scroll(screen, player_loc, self.bg, self.legend, self.up, self.down, self.up_rect, self.down_rect)
                 for sp in sector_map.sprites():
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
@@ -315,7 +309,7 @@ class Map:
                         elif sp.type == 'shop':
                             shop(screen, player, assets, escape_call)
             if alive:
-                sector_map.draw(screen)
+                sector_map.draw(screen, player_loc)
                 pygame.display.update()
         if player.current_health <= 0:
             game_over(screen)

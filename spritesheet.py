@@ -2,6 +2,11 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from pygame.locals import *
+''' 
+Modified from pygame tutorial on spritesheets
+https://www.pygame.org/wiki/Spritesheet
+'''
+
 class Spritesheet(object):
     def __init__(self, filename):
         self.sheet = pygame.image.load(filename)
