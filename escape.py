@@ -25,15 +25,11 @@ class Escape:
                 return False             
 
           if 340+170 > mouse[0] > 340 and 240+50 > mouse[1] > 240:
-            #pygame.draw.rect(screen, GRAY,(340,240,170,50))
             pygame.draw.rect(screen, BRIGHT_GRAY,(340,240,170,50))
             if click[0] == 1:
-                #pygame.quit()
-                #sys.exit()
                 return False      
           
           elif 340+170 > mouse[0] > 340 and 320+50 > mouse[1] > 320:
-            #pygame.draw.rect(screen, GRAY,(340,320,170,50))
             pygame.draw.rect(screen, BRIGHT_GRAY,(340,320,170,50))
             if click[0] == 1:
                 sys.exit()

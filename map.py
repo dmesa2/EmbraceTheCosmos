@@ -268,12 +268,12 @@ class Map:
      self.up_rect = self.up.get_rect(topright=self.down_rect.topleft)
 
   def main_map(self, screen, player, assets):
-
       escape_call = Escape()
       sector_map = IconTree(self.images)
       sector_map.update()
       player_loc = sector_map.root
       alive = True
+
       while alive:
         screen.blit(self.bg, (0, 0))
         screen.blit(self.legend, (580, 20))
@@ -281,7 +281,6 @@ class Map:
         screen.blit(self.down, self.down_rect)
 
         for event in pygame.event.get():
-
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -294,7 +293,9 @@ class Map:
             elif event.type == MOUSEBUTTONDOWN:
                 position = pygame.mouse.get_pos()
                 if self.up_rect.collidepoint(position) or self.down_rect.collidepoint(position):
-                    sector_map.scroll(screen, player_loc, self.bg, self.legend, self.up, self.down, self.up_rect, self.down_rect)
+                    sector_map.scroll(screen, player_loc, self.bg, 
+                                        self.legend, self.up, self.down, 
+                                        self.up_rect, self.down_rect)
                 for sp in sector_map.sprites():
                     if sp.is_child(player_loc) and sp.collide(position):
                         player_loc = sp
@@ -302,6 +303,7 @@ class Map:
                             alive = battle(screen, player, assets, escape_call)
                         elif sp.type == 'boss':
                             alive = battle(screen, player, assets, escape_call, boss=True)
+                            break
                         elif sp.type == 'unknown':
                             alive = events(screen, player, assets, escape_call)
                         elif sp.type == 'repair':
@@ -313,3 +315,6 @@ class Map:
                 pygame.display.update()
         if player.current_health <= 0:
             game_over(screen)
+        else:
+            game_win(screen)
+

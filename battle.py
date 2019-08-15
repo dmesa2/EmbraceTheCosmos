@@ -135,16 +135,6 @@ def targeting(screen, board, card, player, enemy_fleet, assets):
     if card.ctype == 'TARGET_ATTACK':
         # A collision is detected with an enemy sprite
         if [sp for sp in enemy_fleet if sp.collision(position)]:
-            
-            '''
-            laser, l_rect = assets.laser_img, assets.laser_rect
-            l_rect.midleft = player.rect.midright
-            for i in range(5):
-                screen.blit(laser, l_rect)
-                pygame.display.update()
-                pygame.time.wait(50)
-                pygame.draw.rect(screen, BLACK, l_rect)
-                l_rect.x += 50'''
             card.process_card(screen, player, enemy_fleet, assets)
             ret = True
     else:
@@ -242,7 +232,6 @@ def battle(screen, player, assets, escape_call, boss=False):
     player.credits += loot
     salvage(screen, board, player, assets)
     player.drain_shields()
-    print("current credits:", player.credits)
     return True
 
 if __name__ == "__main__":
