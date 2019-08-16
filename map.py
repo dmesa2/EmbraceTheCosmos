@@ -10,18 +10,11 @@ from battle import battle
 from repair import repair
 from events import events
 from shop import shop
-from gameover import game_over
+from gameover import game_over, game_win
 from escape import Escape
 
 LAST = -1
 FIRST = 1
-
-ALPHA = 200
-
-# Access levels
-INACCESSIBLE = 0
-ACCESSIBLE = 1
-CURRENT_LOCATION = 2
 
 def get_rand():
     # Gets a random numbers from an uneven distrubution
@@ -315,6 +308,4 @@ class Map:
                 pygame.display.update()
         if player.current_health <= 0:
             game_over(screen)
-        else:
-            game_win(screen)
 

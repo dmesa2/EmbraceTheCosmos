@@ -25,7 +25,7 @@ def game_win(screen):
     pygame.font.init()
     font = pygame.font.Font(None, 84) 
     yay = font.render("YOU WIN", True, BRIGHT_GREEN)
-    mid = oh_no.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)) 
+    mid = yay.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)) 
     bg = screen.fill(BLACK)
     screen.blit(yay, mid)
     pygame.display.update()
