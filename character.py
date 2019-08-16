@@ -160,6 +160,8 @@ class Character(sprite.Sprite):
         enemy_group.draw(screen)
         if self in enemy_group:
             self.remove(self.groups())
+        if self.explosions is None:
+            return
         pygame.display.update()
         for boom in self.explosions:
             rect = boom.get_rect(center=self.rect.center)

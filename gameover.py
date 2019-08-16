@@ -13,6 +13,7 @@ def game_over(screen):
     bg = screen.fill(BLACK)
     screen.blit(oh_no, mid)
     pygame.display.update()
+    pygame.time.wait(1000)
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -23,12 +24,13 @@ def game_over(screen):
 
 def game_win(screen):
     pygame.font.init()
-    font = pygame.font.Font(None, 84) 
+    font = pygame.font.Font(None, 84)
     yay = font.render("YOU WIN", True, BRIGHT_GREEN)
-    mid = yay.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)) 
+    mid = yay.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
     bg = screen.fill(BLACK)
     screen.blit(yay, mid)
     pygame.display.update()
+    pygame.time.wait(1000)
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -36,4 +38,3 @@ def game_win(screen):
                 sys.exit()
             if event.type == MOUSEBUTTONDOWN:
                 return
-

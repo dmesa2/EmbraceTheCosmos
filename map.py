@@ -125,6 +125,7 @@ class IconTree(pygame.sprite.Group):
             nodes_per_repair = len(self.levels[LAST]) // repair_nodes
         for i in range(repair_nodes):
             temp = Icon(*images['repair'])
+            temp.type = 'repair'
             repair.append(temp)
             for parent in self.levels[LAST][i * nodes_per_repair : (i + 1) * nodes_per_repair]:
                 parent.children.append(temp)
@@ -133,6 +134,7 @@ class IconTree(pygame.sprite.Group):
         self.levels.append(repair)
         ''' Add final boss node. '''
         boss = Icon(*images['boss'])
+        boss.type ='boss'
         for parent in self.levels[LAST]:
             parent.children.append(boss)
         self.levels.append([boss])
@@ -266,8 +268,8 @@ class Map:
       sector_map.update()
       player_loc = sector_map.root
       alive = True
-
-      while alive:
+      win = None
+      while alive and win is None:
         screen.blit(self.bg, (0, 0))
         screen.blit(self.legend, (580, 20))
         screen.blit(self.up, self.up_rect)
@@ -286,8 +288,8 @@ class Map:
             elif event.type == MOUSEBUTTONDOWN:
                 position = pygame.mouse.get_pos()
                 if self.up_rect.collidepoint(position) or self.down_rect.collidepoint(position):
-                    sector_map.scroll(screen, player_loc, self.bg, 
-                                        self.legend, self.up, self.down, 
+                    sector_map.scroll(screen, player_loc, self.bg,
+                                        self.legend, self.up, self.down,
                                         self.up_rect, self.down_rect)
                 for sp in sector_map.sprites():
                     if sp.is_child(player_loc) and sp.collide(position):
@@ -295,8 +297,7 @@ class Map:
                         if sp.type == 'minion':
                             alive = battle(screen, player, assets, escape_call)
                         elif sp.type == 'boss':
-                            alive = battle(screen, player, assets, escape_call, boss=True)
-                            break
+                            win = battle(screen, player, assets, escape_call, boss=True)
                         elif sp.type == 'unknown':
                             alive = events(screen, player, assets, escape_call)
                         elif sp.type == 'repair':
@@ -307,5 +308,8 @@ class Map:
                 sector_map.draw(screen, player_loc)
                 pygame.display.update()
         if player.current_health <= 0:
-            game_over(screen)
-
+            break
+      if not win or player.current_health <= 0:
+        game_over(screen)
+      if(win):
+        game_win(screen)
